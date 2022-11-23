@@ -45,13 +45,21 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
     }
-    //Función para acceder a la aplicación principal mediante FireBase
+    //Función para acceder a la aplicación principal mediante FireBase y comprobación de correo verificado
     private fun signIn(email : String, password : String){
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this){
                 task ->
             if(task.isSuccessful){
-                val i = Intent(this, GasStationsActivity::class.java)
-                startActivity(i)
+                val user = firebaseAuth.currentUser
+                val verify = user?.isEmailVerified
+                if(verify==true){
+                    val i = Intent(this, GasStationsActivity::class.java)
+                    startActivity(i)
+                }
+                else{
+                    Toast.makeText(baseContext,"Por favor, verifique su correo electrónico.", Toast.LENGTH_SHORT).show()
+                }
+
             }
             else{
                 Toast.makeText(baseContext,"Correo electrónico y/o contraseña incorrectos.", Toast.LENGTH_SHORT).show()
