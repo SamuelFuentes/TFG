@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">GasStations</string>
+    <string name="textCreateAccount"><u>Crear Cuenta</u></string>
+    <string name="textForgotPassword"><u>Recordar contraseña</u></string>
 </resources>
