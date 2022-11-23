@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "840504102268",
+    "project_id": "gas-stations-2500d",
+    "storage_bucket": "gas-stations-2500d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:840504102268:android:ad01f84e87a014935ae8f9",
+        "android_client_info": {
+          "package_name": "com.tfg.gasstations"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "840504102268-s06v9a5fcb7vfirdiienc997jp7nl211.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tfg.gasstations",
+            "certificate_hash": "467c4ce861d06b43e6c35304d65a3e3de4f24f23"
+          }
+        },
+        {
+          "client_id": "840504102268-6gj9sp91ks7t85vstjst8rbnqlck14l8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWu5pTcnVQaW3rwFwoEL_s3XVHx3wE700"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "840504102268-6gj9sp91ks7t85vstjst8rbnqlck14l8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
