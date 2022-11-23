@@ -21,6 +21,8 @@ class MainActivity : AppCompatActivity() {
         val buttonSignIn : Button = findViewById(R.id.buttonSignIn)
         val editTextEmail : TextView = findViewById(R.id.editTextSignInEmail)
         val editTextPassword : TextView = findViewById(R.id.editTextSignInPassword)
+        val textViewSignUp : TextView = findViewById(R.id.textViewSignUp)
+        val textViewForgotPassword : TextView = findViewById(R.id.textViewForgotPassword)
         firebaseAuth = Firebase.auth
 
         //Accede a la aplicación
@@ -32,7 +34,16 @@ class MainActivity : AppCompatActivity() {
                 signIn(editTextEmail.text.toString(), editTextPassword.text.toString())
             }
         }
-
+        //Accede a creación de cuentas
+        textViewSignUp.setOnClickListener(){
+            val i = Intent(this, SignUpActivity::class.java)
+            startActivity(i)
+        }
+        //Accede a recuperación de cuentas
+        textViewForgotPassword.setOnClickListener(){
+            val i = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(i)
+        }
     }
     //Función para acceder a la aplicación principal mediante FireBase
     private fun signIn(email : String, password : String){
