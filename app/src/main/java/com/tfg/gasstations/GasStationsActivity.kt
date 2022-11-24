@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Button
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -16,7 +17,14 @@ class GasStationsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gas_stations)
 
+        val buttonSignIn : Button = findViewById(R.id.buttonMap)
+
         firebaseAuth = Firebase.auth
+
+        buttonSignIn.setOnClickListener(){
+            val i = Intent(this, MapsActivity::class.java)
+            startActivity(i)
+        }
     }
     //Mostrar menú
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
