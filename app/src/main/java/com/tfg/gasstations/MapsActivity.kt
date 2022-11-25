@@ -153,5 +153,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return Retrofit.Builder().baseUrl("https://api.openrouteservice.org/")
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
-    //TODO poner punto en el inicio y punto en el final, añadir gasolineras
 }
