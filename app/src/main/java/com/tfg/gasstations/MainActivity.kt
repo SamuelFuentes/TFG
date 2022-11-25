@@ -23,7 +23,13 @@ class MainActivity : AppCompatActivity() {
         val editTextPassword : TextView = findViewById(R.id.editTextSignInPassword)
         val textViewSignUp : TextView = findViewById(R.id.textViewSignUp)
         val textViewForgotPassword : TextView = findViewById(R.id.textViewForgotPassword)
+        val byPass : Button = findViewById(R.id.byPass)
         firebaseAuth = Firebase.auth
+
+        byPass.setOnClickListener(){
+            val i = Intent(this, GasStationsActivity::class.java)
+            startActivity(i)
+        }
 
         //Accede a la aplicación
         buttonSignIn.setOnClickListener(){

@@ -3,6 +3,7 @@ package com.tfg.gasstations
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -15,6 +16,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -39,18 +41,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //clickar para elegir el inicio y final de la ruta y crear la ruta
         buttonCalculateRoute = findViewById(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
+            map.clear()
             start = ""
             end = ""
+            var startAnimatedRoute = LatLng(0.0,0.0)
             if(::map.isInitialized){
                 map.setOnMapClickListener {
                     if (start.isEmpty()){
                         start = "${it.longitude}"+","+"${it.latitude}"
+                        val startRoute = LatLng(it.latitude,it.longitude)
+                        map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta"))
+                        startAnimatedRoute = startRoute
                     }
                     else if(end.isEmpty()){
                         end = "${it.longitude}"+","+"${it.latitude}"
+                        val endRoute = LatLng(it.latitude,it.longitude)
+                        map.addMarker(MarkerOptions().position(endRoute).title("Destino"))
                     }
                     else{
                         createRoute()
+                        map.animateCamera(
+                            CameraUpdateFactory.newLatLngZoom(startAnimatedRoute, 16f),
+                            4000,
+                            null)
                     }
                 }
             }
@@ -129,7 +142,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun drawRoute(body : RouteResponse?){
         val polyLineOptions = PolylineOptions()
         body?.features?.first()?.geometry?.coordinates?.forEach{
-            polyLineOptions.add(LatLng(it[1],it[0]))
+            polyLineOptions.add(LatLng(it[1],it[0])).width(6.8F)
+                .color(Color.RED)
         }
         runOnUiThread{
             val route = map.addPolyline(polyLineOptions)
