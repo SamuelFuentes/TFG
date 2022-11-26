@@ -38,7 +38,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         createMapFragment()
-        //clickar para elegir el inicio y final de la ruta y crear la ruta
+
+        //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         buttonCalculateRoute = findViewById(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
             map.clear()
@@ -127,9 +128,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //TODO función para iniciar en tu localización actual
     private fun myStartingLocalization(){}
 
+    //Crear rutas
     private fun createRoute(){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getRetrofit().create(ApiServiceRoutes::class.java)
+            val call = getRoute().create(ApiServiceRoutes::class.java)
                 .getRoute("5b3ce3597851110001cf624863cc2b9245844cacb6cf551d2d8490c1",start,end)
             if (call.isSuccessful){
                 drawRoute(call.body())
@@ -139,6 +141,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+    //Dibujar ruta
     private fun drawRoute(body : RouteResponse?){
         val polyLineOptions = PolylineOptions()
         body?.features?.first()?.geometry?.coordinates?.forEach{
@@ -149,7 +152,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val route = map.addPolyline(polyLineOptions)
         }
     }
-    private fun getRetrofit() : Retrofit {
+    //Obtener rutas de la api y convertirlas de json
+    private fun getRoute() : Retrofit {
         return Retrofit.Builder().baseUrl("https://api.openrouteservice.org/")
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
