@@ -39,6 +39,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         createMapFragment()
+        listGasByCity()
 
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         buttonCalculateRoute = findViewById(R.id.buttonCalculateRoute)
@@ -164,15 +165,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val route = map.addPolyline(polyLineOptions)
         }
     }
-
     //Llamada a la API y conversión del JSON
     private fun getGasStations() : Retrofit {
-        val baseURLGas : String = "https://sedeaplicaciones.minetur.gob.es/" +
-                "ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/"
+        val baseURLGas : String = "https://sedeaplicaciones.minetur.gob.es/"
         return Retrofit.Builder().baseUrl(baseURLGas)
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
 
+    private fun listGasByCity(): ArrayList<String> {
+        val gasArrayList = ArrayList<String>()
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getGasStations().create(ApiServiceGasByCity::class.java)
+                .getGasStationsByCity("01")
+            if(call.isSuccessful){
+                Log.i("DEPURANDO", "SUCCES")
+                for (i in call.body()?.gasList!!){
+                    gasArrayList.add(i.label)
+                }
+                Log.i("DEPURANDO", gasArrayList.toString())
+
+            }
+            else{
+                Log.i("DEPURANDO", "NOT SUCCES")
+                Log.i("DEPURANDO", call.toString())
+            }
+        }
+        return gasArrayList
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
     private fun createMarkers(body: Array<GasStationsResponse>){
         //address : String, schedule : String, lati : String, long : String,
         //gasoleo : String, gas95 : String, gas98 : String, label : String
@@ -203,4 +237,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
+ */
 }

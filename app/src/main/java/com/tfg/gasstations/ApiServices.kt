@@ -2,15 +2,19 @@ package com.tfg.gasstations
 
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
+import java.util.Objects
 
 interface ApiServiceCities {
     @GET("/ServiciosRESTCarburantes/PreciosCarburantes/Listados/Provincias/")
     suspend fun getCities() : Response<Array<CitiesResponse>>
 }
-interface ApiServiceGas {
-    @GET("/PreciosCarburantes/EstacionesTerrestres/")
-    suspend fun getGasStations(): Response<Array<GasStationsResponse>?>
+interface ApiServiceGasByCity {
+    @GET("/ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/FiltroProvincia/{IDProvincia}")
+    suspend fun getGasStationsByCity(
+        @Path("IDProvincia") IDProvincia : String
+    ): Response<GasStationsResponse>
 }
 
 interface ApiServiceRoutes {
