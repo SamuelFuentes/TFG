@@ -34,19 +34,20 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.02">
-    </Spinner>
+        app:layout_constraintVertical_bias="0.065"></Spinner>
 
     <TextView
-        android:id="@+id/textViewT"
-        android:layout_width="57dp"
-        android:layout_height="16dp"
-        android:text="TextView"
+        android:id="@+id/textViewCities"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ciudades: "
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.014"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.367" />
+        app:layout_constraintVertical_bias="0.037" />
 </androidx.constraintlayout.widget.ConstraintLayout>
