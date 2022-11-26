@@ -6,7 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
+import android.view.View
+import android.widget.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -15,23 +16,37 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
+import retrofit2.http.Query
+import kotlin.math.log
 
 class GasStationsActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth
 
+    private lateinit var spinnerCities : Spinner
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_gas_stations)
-
         val buttonSignIn : Button = findViewById(R.id.buttonMap)
         val buttonTest : Button = findViewById(R.id.buttonTest)
+        listCities()
+        var citiesArrayList : ArrayList<String> = listCities()
+        spinnerCities = findViewById(R.id.spinnerCities) as Spinner
+        spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, citiesArrayList)
+        spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                citiesArrayList.get(p2)
+            }
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                "Error"
+            }
+        }
 
         firebaseAuth = Firebase.auth
 
         buttonTest.setOnClickListener(){
-            CoroutineScope(Dispatchers.IO).launch {
-                cities()
-            }
+            listCities()
         }
 
         buttonSignIn.setOnClickListener(){
@@ -53,6 +68,7 @@ class GasStationsActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+    //Salir de la sección
     private fun signOut(){
         firebaseAuth.signOut()
         val i = Intent(this, MainActivity::class.java)
@@ -62,22 +78,25 @@ class GasStationsActivity : AppCompatActivity() {
     override fun onBackPressed() {
         return
     }
-
-    private fun getCities() : Retrofit {
+    //Obtener lista de ciudades de la api
+    private fun getCities() : Retrofit{
         return Retrofit.Builder().baseUrl("https://sedeaplicaciones.minetur.gob.es/")
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
-
-    private fun cities(){
+    //Crear lista de ciudades para mostrarlas en el spinner
+    private fun listCities() : ArrayList<String>{
+        val citiesArrayList = ArrayList<String>()
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getCities().create(ApiServiceCities::class.java).getCity()
-            if(call.isSuccessful){
-                Log.i("DEPURANDO","SUCCESSFUL")
+            val call = getCities().create(ApiServiceCities::class.java).getCities()
+            if (call.isSuccessful) {
+                for (i in call.body()!!) {
+                    citiesArrayList.add(i.provincia)
+                }
+                Log.i("DEPURANDO", citiesArrayList.toString())
+            } else {
+                Log.i("DEPURANDO", "NOT SUCCES")
             }
-            else{
-                Log.i("DEPURANDO","NOT SUCCESSFUL")
-            }
-            call.body()
         }
+        return citiesArrayList
     }
 }
