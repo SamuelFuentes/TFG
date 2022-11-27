@@ -171,7 +171,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         return Retrofit.Builder().baseUrl(baseURLGas)
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
-
+    //Crear markes de las gasolineras con sus descripciones
     private fun listGasByCity(): ArrayList<String> {
         val gasArrayList = ArrayList<String>()
         CoroutineScope(Dispatchers.IO).launch {
@@ -182,61 +182,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 for (i in call.body()?.gasList!!){
                     gasArrayList.add(i.label)
                 }
-                Log.i("DEPURANDO", gasArrayList.toString())
-
+                if(::map.isInitialized){
+                    runOnUiThread {
+                        for (i in call.body()!!.gasList){
+                            val lat = i.lati.replace(",",".").toDouble()
+                            val lng = i.long.replace(",",".").toDouble()
+                            val position = LatLng(lat, lng)
+                            var gas95 = ""
+                            var gas98 = ""
+                            var gasol = ""
+                            if(i.gas95.isNotEmpty()){
+                                gas95 = "Gasolina 95: "+ i.gas95 +"€, "
+                            }
+                            if(i.gas98.isNotEmpty()){
+                                gas98 = "Gasolina 98: "+ i.gas98 +"€, "
+                            }
+                            if(i.gasoleo.isNotEmpty()){
+                                gasol = "Gasoleo: "+ i.gasoleo +"€, "
+                            }
+                            map.addMarker(
+                                MarkerOptions().position(position).title(
+                                    "${i.label}, ${i.address}")
+                                    .snippet("Horario: ${i.schedule} $gas95$gas98$gasol")
+                            )
+                        }
+                    }
+                }
             }
             else{
                 Log.i("DEPURANDO", "NOT SUCCES")
-                Log.i("DEPURANDO", call.toString())
             }
         }
         return gasArrayList
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-    private fun createMarkers(body: Array<GasStationsResponse>){
-        //address : String, schedule : String, lati : String, long : String,
-        //gasoleo : String, gas95 : String, gas98 : String, label : String
-        CoroutineScope(Dispatchers.IO).launch {
-            if(::map.isInitialized) {
-                val arrayGas = ArrayList<String>()
-                body.forEach {
-                    arrayGas.add(it.label)
-                    Log.i("DEPURANDO",arrayGas.toString())
-                    var position: LatLng = LatLng(it.lati.toDouble(), it.long.toDouble())
-                    map.addMarker(
-                        MarkerOptions().position(position).title(
-                            "${it.label}, ${it.address}, " + "Horario: ${it.schedule} " +
-                                    "Gasoleo: ${it.gasoleo}€, Gasolina 95: ${it.gas95}€, " +
-                                    "Gasolina 98: ${it.gas98}€"
-                        )
-                    )
-                }
-            }
-        }
-    }
-    private fun crear(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = getGasStations().create(ApiServiceGas::class.java).getGasStations()
-            if (call.isSuccessful){
-                call.body()?.let { createMarkers(it) }
-                Log.i("DEPURANDO", "SI")
-            }
-        }
-    }
-
- */
 }

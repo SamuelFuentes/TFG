@@ -10,10 +10,10 @@ data class GasStationsResponse(@SerializedName("ListaEESSPrecio") var gasList : 
 data class GasList(@SerializedName("Dirección") var address : String,
                    @SerializedName("Horario") var schedule : String,
                    @SerializedName("Latitud") var lati : String,
-                   @SerializedName("Longitud") var long : String,
-                   @SerializedName("Precio_Gasoleo_A") var gasoleo : String,
-                   @SerializedName("Precio_Gasolina_95_E5") var gas95 : String,
-                   @SerializedName("Precio_Gasolina_98_E5") var gas98 : String,
+                   @SerializedName("Longitud (WGS84)") var long : String,
+                   @SerializedName("Precio Gasoleo A") var gasoleo : String,
+                   @SerializedName("Precio Gasolina 95 E5") var gas95 : String,
+                   @SerializedName("Precio Gasolina 98 E5") var gas98 : String,
                    @SerializedName("Rótulo") var label : String)
 //Rutas
 data class RouteResponse(val features : List<Feature>)
