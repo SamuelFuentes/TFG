@@ -3,22 +3,28 @@ package com.tfg.gasstations
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,8 +33,15 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
-    private lateinit var map: GoogleMap
-    private lateinit var buttonCalculateRoute:Button
+    private lateinit var map : GoogleMap
+    private lateinit var buttonCalculateRoute : Button
+    private lateinit var markerDefault : BitmapDescriptor
+    private lateinit var markerCepsa : BitmapDescriptor
+    private lateinit var markerRepsol : BitmapDescriptor
+    private lateinit var markerBp : BitmapDescriptor
+    private lateinit var markerGalp : BitmapDescriptor
+    private lateinit var markerShell : BitmapDescriptor
+
     private var start : String = ""
     private var end   : String = ""
     companion object {
@@ -39,12 +52,38 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         createMapFragment()
-        listGasByCity()
+        markerGasByCity()
+        //markerCepsa
+        val MarkerViewCepsa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewCepsa : CardView = MarkerViewCepsa.findViewById(R.id.cardViewCepsa)
+        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(cardViewCepsa), cardViewCepsa.width, cardViewCepsa.height, false)
+        markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
+        //repsolMarker
+        val MarkerViewRepsol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewRepsol : CardView = MarkerViewRepsol.findViewById(R.id.cardViewRepsol)
+        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(cardViewRepsol), cardViewRepsol.width, cardViewRepsol.height, false)
+        markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
+        //markerBp
+        val MarkerViewBp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewBp : CardView = MarkerViewBp.findViewById(R.id.cardViewBp)
+        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(cardViewBp), cardViewBp.width, cardViewBp.height, false)
+        markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
+        //markerGalp
+        val markerViewGalp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewGalp : CardView = markerViewGalp.findViewById(R.id.cardViewGalp)
+        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(cardViewGalp), cardViewGalp.width, cardViewGalp.height, false)
+        markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
+        //markerShell
+        val markerViewShell = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewShell : CardView = markerViewShell.findViewById(R.id.cardViewShell)
+        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(cardViewShell), cardViewShell.width, cardViewShell.height, false)
+        markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
+
+        val buttonClear : Button = findViewById(R.id.buttonClear)
 
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         buttonCalculateRoute = findViewById(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
-            map.clear()
             start = ""
             end = ""
             var startAnimatedRoute = LatLng(0.0,0.0)
@@ -53,13 +92,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     if (start.isEmpty()){
                         start = "${it.longitude}"+","+"${it.latitude}"
                         val startRoute = LatLng(it.latitude,it.longitude)
-                        map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta"))
+                        map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
                         startAnimatedRoute = startRoute
                     }
                     else if(end.isEmpty()){
                         end = "${it.longitude}"+","+"${it.latitude}"
                         val endRoute = LatLng(it.latitude,it.longitude)
-                        map.addMarker(MarkerOptions().position(endRoute).title("Destino"))
+                        map.addMarker(MarkerOptions().position(endRoute).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
                     }
                     else{
                         createRoute()
@@ -70,6 +109,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                 }
             }
+        }
+        buttonClear.setOnClickListener{
+            map.clear()
         }
     }
     //Arrancar GoogleMaps
@@ -172,38 +214,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
     //Crear markes de las gasolineras con sus descripciones
-    private fun listGasByCity(): ArrayList<String> {
+    private fun markerGasByCity(): ArrayList<String> {
         val gasArrayList = ArrayList<String>()
         CoroutineScope(Dispatchers.IO).launch {
             val call = getGasStations().create(ApiServiceGasByCity::class.java)
-                .getGasStationsByCity("01")
+                .getGasStationsByCity("41")
+            //35
             if(call.isSuccessful){
                 Log.i("DEPURANDO", "SUCCES")
                 for (i in call.body()?.gasList!!){
                     gasArrayList.add(i.label)
                 }
+                Log.i("DEPURANDO", gasArrayList.toString())
                 if(::map.isInitialized){
                     runOnUiThread {
                         for (i in call.body()!!.gasList){
+                            //var labelIcon = selectIcon(gasArrayList)
+                            var markerIcon = selectMarkerIcon(i.label)
                             val lat = i.lati.replace(",",".").toDouble()
                             val lng = i.long.replace(",",".").toDouble()
                             val position = LatLng(lat, lng)
                             var gas95 = ""
                             var gas98 = ""
                             var gasol = ""
-                            if(i.gas95.isNotEmpty()){
-                                gas95 = "Gasolina 95: "+ i.gas95 +"€, "
-                            }
-                            if(i.gas98.isNotEmpty()){
-                                gas98 = "Gasolina 98: "+ i.gas98 +"€, "
-                            }
-                            if(i.gasoleo.isNotEmpty()){
-                                gasol = "Gasoleo: "+ i.gasoleo +"€, "
-                            }
+                            if(i.gas95.isNotEmpty()){ gas95 = "Gas 95: "+ i.gas95 +"€, " }
+                            if(i.gas98.isNotEmpty()){ gas98 = "Gas 98: "+ i.gas98 +"€, " }
+                            if(i.gasoleo.isNotEmpty()){ gasol = "Gasoleo: "+ i.gasoleo +"€, " }
                             map.addMarker(
                                 MarkerOptions().position(position).title(
-                                    "${i.label}, ${i.address}")
-                                    .snippet("Horario: ${i.schedule} $gas95$gas98$gasol")
+                                    "${i.label}, ${i.address} Horario: ${i.schedule}")
+                                    .snippet("$gas95$gas98$gasol").icon(markerIcon)
+                                    //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
                             )
                         }
                     }
@@ -215,4 +256,44 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         return gasArrayList
     }
+    //Crear custom markers
+    private fun viewToBitmap(view: View) : Bitmap{
+        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+        val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.layout(0,0,view.measuredWidth, view.measuredHeight)
+        view.draw(canvas)
+        return bitmap
+    }
+    //Selector de iconos para los markers
+    private fun selectMarkerIcon(label : String): BitmapDescriptor{
+        //defaultMarker
+        val defaultMarkerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val cardViewDefault : CardView = defaultMarkerView.findViewById(R.id.cardViewDefault)
+        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(cardViewDefault), cardViewDefault.width, cardViewDefault.height, false)
+        markerDefault = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
+        var markerRes = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
+        if(label == "CEPSA"){ markerRes = markerCepsa }
+        if(label == "REPSOL"){ markerRes = markerRepsol }
+        if(label == "BP"){ markerRes = markerBp }
+        if(label == "GALP"){ markerRes = markerGalp }
+        if(label == "SHELL"){ markerRes = markerShell }
+        return markerRes
+    }
+    /*
+    private fun myLocation(){
+        CoroutineScope(Dispatchers.IO).launch{
+            if(::map.isInitialized){
+                runOnUiThread {
+                    val myPosition = LatLng(map.myLocation.latitude, map.myLocation.longitude)
+                    Log.i("DEPURANDO","myposition ${myPosition}")
+                    map.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(myPosition, 16f),
+                        4000,
+                        null
+                    )
+                }
+            }
+        }
+    }*/
 }
