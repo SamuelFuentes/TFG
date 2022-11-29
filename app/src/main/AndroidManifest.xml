@@ -16,6 +16,13 @@
         android:theme="@style/Theme.GasStations"
         tools:targetApi="31">
         <activity
+            android:name=".MarkersActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".testSpiner"
             android:exported="false">
             <meta-data

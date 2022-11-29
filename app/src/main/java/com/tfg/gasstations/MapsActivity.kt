@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.icu.number.IntegerWidth
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -36,14 +35,21 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map : GoogleMap
     private lateinit var buttonCalculateRoute : Button
     private lateinit var markerDefault : BitmapDescriptor
-    private lateinit var markerCepsa : BitmapDescriptor
-    private lateinit var markerRepsol : BitmapDescriptor
-    private lateinit var markerBp : BitmapDescriptor
-    private lateinit var markerGalp : BitmapDescriptor
-    private lateinit var markerShell : BitmapDescriptor
     private lateinit var markerMinGas95 : BitmapDescriptor
     private lateinit var markerMinGas98 : BitmapDescriptor
     private lateinit var markerMinGasol : BitmapDescriptor
+    private lateinit var markerAvia : BitmapDescriptor
+    private lateinit var markerBp : BitmapDescriptor
+    private lateinit var markerCarrefour : BitmapDescriptor
+    private lateinit var markerCepsa : BitmapDescriptor
+    private lateinit var markerDisa : BitmapDescriptor
+    private lateinit var markerEroski : BitmapDescriptor
+    private lateinit var markerGalp : BitmapDescriptor
+    private lateinit var markerHam : BitmapDescriptor
+    private lateinit var markerNaturgy : BitmapDescriptor
+    private lateinit var markerPetronor : BitmapDescriptor
+    private lateinit var markerRepsol : BitmapDescriptor
+    private lateinit var markerShell : BitmapDescriptor
     private lateinit var spinnerCities : Spinner
     private lateinit var selectedCity : String
     private var idSelectedCity : String = "00"
@@ -59,46 +65,81 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
         createMapFragment()
         listCities()
-        //markerCepsa
-        val MarkerViewCepsa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewCepsa : CardView = MarkerViewCepsa.findViewById(R.id.cardViewCepsa)
-        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(cardViewCepsa), cardViewCepsa.width, cardViewCepsa.height, false)
-        markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
-        //repsolMarker
-        val MarkerViewRepsol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewRepsol : CardView = MarkerViewRepsol.findViewById(R.id.cardViewRepsol)
-        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(cardViewRepsol), cardViewRepsol.width, cardViewRepsol.height, false)
-        markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
-        //markerBp
-        val MarkerViewBp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewBp : CardView = MarkerViewBp.findViewById(R.id.cardViewBp)
-        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(cardViewBp), cardViewBp.width, cardViewBp.height, false)
-        markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
-        //markerGalp
-        val markerViewGalp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewGalp : CardView = markerViewGalp.findViewById(R.id.cardViewGalp)
-        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(cardViewGalp), cardViewGalp.width, cardViewGalp.height, false)
-        markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
-        //markerShell
-        val markerViewShell = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewShell : CardView = markerViewShell.findViewById(R.id.cardViewShell)
-        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(cardViewShell), cardViewShell.width, cardViewShell.height, false)
-        markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
         //markerMinGas95
         val markerViewMinGas95 = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewMinGas95 : CardView = markerViewMinGas95.findViewById(R.id.cardViewMinGas95)
-        val bitmapMinGas95 = Bitmap.createScaledBitmap(viewToBitmap(cardViewMinGas95), cardViewMinGas95.width, cardViewMinGas95.height, false)
+        val imageViewMinGas95 : ImageView = markerViewMinGas95.findViewById(R.id.imageViewMarkerMinGas95)
+        val bitmapMinGas95 = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGas95), 126, 126, false)
         markerMinGas95 = BitmapDescriptorFactory.fromBitmap(bitmapMinGas95)
         //markerMinGas98
         val markerViewMinGas98 = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewMinGas98 : CardView = markerViewMinGas98.findViewById(R.id.cardViewMinGas98)
-        val bitmapMinGas98 = Bitmap.createScaledBitmap(viewToBitmap(cardViewMinGas98), cardViewMinGas98.width, cardViewMinGas98.height, false)
+        val imageViewMinGas98 : ImageView = markerViewMinGas98.findViewById(R.id.imageViewMarkerMinGas98)
+        val bitmapMinGas98 = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGas98), 126, 126, false)
         markerMinGas98= BitmapDescriptorFactory.fromBitmap(bitmapMinGas98)
         //markerMinGasol
         val markerViewMinGasol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewMinGasol : CardView = markerViewMinGasol.findViewById(R.id.cardViewMinGasol)
-        val bitmapMinGasol = Bitmap.createScaledBitmap(viewToBitmap(cardViewMinGasol), cardViewMinGasol.width, cardViewMinGasol.height, false)
+        val imageViewMinGasol : ImageView = markerViewMinGasol.findViewById(R.id.imageViewMarkerMinGasoleo)
+        val bitmapMinGasol = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGasol), 126, 126, false)
         markerMinGasol = BitmapDescriptorFactory.fromBitmap(bitmapMinGasol)
+        //markerAVIA
+        val markerViewAvia = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewAvia : ImageView = markerViewAvia.findViewById(R.id.imageViewMarkerAvia)
+        val bitmapAvia = Bitmap.createScaledBitmap(viewToBitmap(imageViewAvia), 96, 96, false)
+        markerAvia = BitmapDescriptorFactory.fromBitmap(bitmapAvia)
+        //markerBp
+        val markerViewBp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewBp : ImageView = markerViewBp.findViewById(R.id.imageViewMarkerBp)
+        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(imageViewBp), 96, 96, false)
+        markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
+        //markerCarrefour
+        val markerViewCarrefour = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewCarrefour : ImageView = markerViewCarrefour.findViewById(R.id.imageViewMarkerCarrefour)
+        val bitmapCarrefour = Bitmap.createScaledBitmap(viewToBitmap(imageViewCarrefour), 96, 96, false)
+        markerCarrefour = BitmapDescriptorFactory.fromBitmap(bitmapCarrefour)
+        //markerCepsa
+        val markerViewCepsa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewCepsa : ImageView = markerViewCepsa.findViewById(R.id.imageViewMarkerCepsa)
+        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(imageViewCepsa), 96, 96, false)
+        markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
+        //markerDisa
+        val markerViewDisa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewDisa : ImageView = markerViewDisa.findViewById(R.id.imageViewMarkerDisa)
+        val bitmapDisa = Bitmap.createScaledBitmap(viewToBitmap(imageViewDisa), 96, 96, false)
+        markerDisa = BitmapDescriptorFactory.fromBitmap(bitmapDisa)
+        //markerEroski
+        val markerViewEroski = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewEroski : ImageView = markerViewEroski.findViewById(R.id.imageViewMarkerEroski)
+        val bitmapEroski = Bitmap.createScaledBitmap(viewToBitmap(imageViewEroski), 96, 96, false)
+        markerEroski = BitmapDescriptorFactory.fromBitmap(bitmapEroski)
+        //markerGalp
+        val markerViewGalp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewGalp : ImageView = markerViewGalp.findViewById(R.id.imageViewMarkerGalp)
+        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(imageViewGalp), 96, 96, false)
+        markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
+        //markerHam
+        val markerViewHam = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewHam : ImageView = markerViewHam.findViewById(R.id.imageViewMarkerHam)
+        val bitmapHam = Bitmap.createScaledBitmap(viewToBitmap(imageViewHam), 96, 96, false)
+        markerHam = BitmapDescriptorFactory.fromBitmap(bitmapHam)
+        //markerNaturgy
+        val markerViewNaturgy = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewNaturgy : ImageView = markerViewNaturgy.findViewById(R.id.imageViewMarkerNaturgy)
+        val bitmapNaturgy = Bitmap.createScaledBitmap(viewToBitmap(imageViewNaturgy), 96, 96, false)
+        markerNaturgy = BitmapDescriptorFactory.fromBitmap(bitmapNaturgy)
+        //markerPetronor
+        val markerViewPetronor = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewPetronor : ImageView = markerViewPetronor.findViewById(R.id.imageViewMarkerPetronor)
+        val bitmapPetronor = Bitmap.createScaledBitmap(viewToBitmap(imageViewPetronor), 96, 96, false)
+        markerPetronor = BitmapDescriptorFactory.fromBitmap(bitmapPetronor)
+        //markerRepsol
+        val markerViewRepsol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewRepsol : ImageView = markerViewRepsol.findViewById(R.id.imageViewMarkerRepsol)
+        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(imageViewRepsol), 96, 96, false)
+        markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
+        //markerShell
+        val markerViewShell = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewShell : ImageView = markerViewShell.findViewById(R.id.imageViewMarkerShell)
+        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(imageViewShell), 96, 96, false)
+        markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
 
         val buttonClear : Button = findViewById(R.id.buttonClear)
 
@@ -143,7 +184,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 selectedCity = citiesArrayList[p2]
                 searchIdCity(selectedCity)
             }
-
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 "Error"
             }
@@ -330,20 +370,24 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
     //Selector de iconos para los markers
     private fun selectMarkerIcon(label : String): BitmapDescriptor{
-        //defaultMarker
-        val defaultMarkerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val cardViewDefault : CardView = defaultMarkerView.findViewById(R.id.cardViewDefault)
-        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(cardViewDefault), cardViewDefault.width, cardViewDefault.height, false)
+        //markerDefault
+        val MarkerViewDefault = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
+        val imageViewDefault : ImageView = MarkerViewDefault.findViewById(R.id.imageViewMarkerDefault)
+        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(imageViewDefault), 96, 96, false)
         markerDefault = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
         var markerRes = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
-        if(label == "CEPSA"){
-
-            markerRes = markerCepsa
-        }
-        if(label == "REPSOL"){ markerRes = markerRepsol }
-        if(label == "BP"){ markerRes = markerBp }
-        if(label == "GALP"){ markerRes = markerGalp }
-        if(label == "SHELL"){ markerRes = markerShell }
+        if(label.contains("AVIA")){ markerRes = markerAvia }
+        if(label.contains("BP")){ markerRes = markerBp }
+        if(label.contains("CARREFOUR")){ markerRes = markerCarrefour }
+        if(label.contains("CEPSA")){ markerRes = markerCepsa }
+        if(label.contains("DISA")){ markerRes = markerDisa }
+        if(label.contains("EROSKI")){ markerRes = markerEroski }
+        if(label.contains("GALP")){ markerRes = markerGalp }
+        if(label.contains("HAM")){ markerRes = markerHam }
+        if(label.contains("NATURGY")){ markerRes = markerNaturgy }
+        if(label.contains("PETRONOR")){ markerRes = markerPetronor }
+        if(label.contains("REPSOL")){ markerRes = markerRepsol }
+        if(label.contains("SHELL")){ markerRes = markerShell }
         return markerRes
     }
     //Convierte las coordenadas de latitud y longitud de la api en LatLng utilizables por googleMaps
