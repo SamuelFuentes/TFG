@@ -13,12 +13,12 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="85dp" >
+        tools:layout_editor_absoluteY="85dp">
         <ImageView
             android:id="@+id/imageViewDefault"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/icon_gas" />
+            app:srcCompat="@drawable/icon_gas"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -33,7 +33,7 @@
             android:id="@+id/imageViewCepsa"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/cepsa" />
+            app:srcCompat="@drawable/cepsa"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -48,7 +48,7 @@
             android:id="@+id/imageViewRepsol"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/repsol" />
+            app:srcCompat="@drawable/repsol"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -63,7 +63,7 @@
             android:id="@+id/imageViewBp"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/bp" />
+            app:srcCompat="@drawable/bp"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -78,7 +78,7 @@
             android:id="@+id/imageViewGalp"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/galp" />
+            app:srcCompat="@drawable/galp"/>
     </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
@@ -89,12 +89,75 @@
         android:layout_marginTop="0dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-
         <ImageView
             android:id="@+id/imageViewShell"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            app:srcCompat="@drawable/shell" />
+            app:srcCompat="@drawable/shell"/>
     </androidx.cardview.widget.CardView>
 
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewMinGas95"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="180dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/imageViewMinGas95"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/background"/>
+        <EditText
+            android:id="@+id/editTextMinGas95"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="95"/>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewMinGas98"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="220dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/imageViewMinGas98"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/background"/>
+        <EditText
+            android:id="@+id/editTextMinGas98"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="98"/>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewMinGasol"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="260dp"
+        android:layout_marginTop="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <ImageView
+            android:id="@+id/imageViewMinGasol"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:srcCompat="@drawable/background"/>
+        <EditText
+            android:id="@+id/editTextMinGasol"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:inputType="textPersonName"
+            android:text="Gasoleo"/>
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>
