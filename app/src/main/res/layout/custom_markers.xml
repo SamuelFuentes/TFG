@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <ImageView
@@ -113,7 +112,7 @@
         android:layout_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/marker_petronor" />
+        app:srcCompat="@drawable/marker_petronor"/>
     <ImageView
         android:id="@+id/imageViewMarkerRepsol"
         android:layout_marginStart="330dp"
@@ -134,35 +133,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/marker_shell"/>
-    <ImageView
-        android:id="@+id/imageViewMarkerMinGas95"
-        android:layout_marginStart="0dp"
-        android:layout_marginTop="30dp"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/marker_mingas95"/>
-    <ImageView
-        android:id="@+id/imageViewMarkerMinGas98"
-        android:layout_marginStart="35dp"
-        android:layout_marginTop="30dp"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/marker_mingas98"/>
-    <ImageView
-        android:id="@+id/imageViewMarkerMinGasoleo"
-        android:layout_marginStart="70dp"
-        android:layout_marginTop="30dp"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/marker_mingasgasoleo"/>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>

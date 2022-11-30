@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         firebaseAuth = Firebase.auth
 
         byPass.setOnClickListener(){
-            val i = Intent(this, GasStationsActivity::class.java)
+            val i = Intent(this, MapsActivity::class.java)
             startActivity(i)
         }
 

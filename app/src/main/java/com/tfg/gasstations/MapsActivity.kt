@@ -12,7 +12,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
-import androidx.cardview.widget.CardView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,11 +32,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map : GoogleMap
-    private lateinit var buttonCalculateRoute : Button
-    private lateinit var markerDefault : BitmapDescriptor
-    private lateinit var markerMinGas95 : BitmapDescriptor
-    private lateinit var markerMinGas98 : BitmapDescriptor
-    private lateinit var markerMinGasol : BitmapDescriptor
+    private lateinit var selectedCity : String
+    private var idSelectedCity : String = "00"
+    private var fuelTypeAll : Boolean = true
+    private var fuelTypeGas95 : Boolean = false
+    private var fuelTypeGasoil : Boolean = false
+    private var minGas95 : Double = 99.99
+    private var minGasoil : Double = 99.99
     private lateinit var markerAvia : BitmapDescriptor
     private lateinit var markerBp : BitmapDescriptor
     private lateinit var markerCarrefour : BitmapDescriptor
@@ -50,10 +51,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var markerPetronor : BitmapDescriptor
     private lateinit var markerRepsol : BitmapDescriptor
     private lateinit var markerShell : BitmapDescriptor
-    private lateinit var spinnerCities : Spinner
-    private lateinit var selectedCity : String
-    private var idSelectedCity : String = "00"
-
     private var start : String = ""
     private var end   : String = ""
     companion object {
@@ -65,86 +62,59 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
         createMapFragment()
         listCities()
-        //markerMinGas95
-        val markerViewMinGas95 = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewMinGas95 : ImageView = markerViewMinGas95.findViewById(R.id.imageViewMarkerMinGas95)
-        val bitmapMinGas95 = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGas95), 126, 126, false)
-        markerMinGas95 = BitmapDescriptorFactory.fromBitmap(bitmapMinGas95)
-        //markerMinGas98
-        val markerViewMinGas98 = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewMinGas98 : ImageView = markerViewMinGas98.findViewById(R.id.imageViewMarkerMinGas98)
-        val bitmapMinGas98 = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGas98), 126, 126, false)
-        markerMinGas98= BitmapDescriptorFactory.fromBitmap(bitmapMinGas98)
-        //markerMinGasol
-        val markerViewMinGasol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewMinGasol : ImageView = markerViewMinGasol.findViewById(R.id.imageViewMarkerMinGasoleo)
-        val bitmapMinGasol = Bitmap.createScaledBitmap(viewToBitmap(imageViewMinGasol), 126, 126, false)
-        markerMinGasol = BitmapDescriptorFactory.fromBitmap(bitmapMinGasol)
+        val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+            .inflate(R.layout.custom_markers, null)
         //markerAVIA
-        val markerViewAvia = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewAvia : ImageView = markerViewAvia.findViewById(R.id.imageViewMarkerAvia)
-        val bitmapAvia = Bitmap.createScaledBitmap(viewToBitmap(imageViewAvia), 96, 96, false)
+        val bitmapAvia = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerAvia)), 96, 96, false)
         markerAvia = BitmapDescriptorFactory.fromBitmap(bitmapAvia)
         //markerBp
-        val markerViewBp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewBp : ImageView = markerViewBp.findViewById(R.id.imageViewMarkerBp)
-        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(imageViewBp), 96, 96, false)
+        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerBp)), 96, 96, false)
         markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
         //markerCarrefour
-        val markerViewCarrefour = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewCarrefour : ImageView = markerViewCarrefour.findViewById(R.id.imageViewMarkerCarrefour)
-        val bitmapCarrefour = Bitmap.createScaledBitmap(viewToBitmap(imageViewCarrefour), 96, 96, false)
+        val bitmapCarrefour = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerCarrefour)), 96, 96, false)
         markerCarrefour = BitmapDescriptorFactory.fromBitmap(bitmapCarrefour)
         //markerCepsa
-        val markerViewCepsa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewCepsa : ImageView = markerViewCepsa.findViewById(R.id.imageViewMarkerCepsa)
-        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(imageViewCepsa), 96, 96, false)
+        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerCepsa)), 96, 96, false)
         markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
         //markerDisa
-        val markerViewDisa = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewDisa : ImageView = markerViewDisa.findViewById(R.id.imageViewMarkerDisa)
-        val bitmapDisa = Bitmap.createScaledBitmap(viewToBitmap(imageViewDisa), 96, 96, false)
+        val bitmapDisa = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerDisa)), 96, 96, false)
         markerDisa = BitmapDescriptorFactory.fromBitmap(bitmapDisa)
         //markerEroski
-        val markerViewEroski = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewEroski : ImageView = markerViewEroski.findViewById(R.id.imageViewMarkerEroski)
-        val bitmapEroski = Bitmap.createScaledBitmap(viewToBitmap(imageViewEroski), 96, 96, false)
+        val bitmapEroski = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerEroski)), 96, 96, false)
         markerEroski = BitmapDescriptorFactory.fromBitmap(bitmapEroski)
         //markerGalp
-        val markerViewGalp = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewGalp : ImageView = markerViewGalp.findViewById(R.id.imageViewMarkerGalp)
-        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(imageViewGalp), 96, 96, false)
+        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerGalp)), 96, 96, false)
         markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
         //markerHam
-        val markerViewHam = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewHam : ImageView = markerViewHam.findViewById(R.id.imageViewMarkerHam)
-        val bitmapHam = Bitmap.createScaledBitmap(viewToBitmap(imageViewHam), 96, 96, false)
+        val bitmapHam = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerHam)), 96, 96, false)
         markerHam = BitmapDescriptorFactory.fromBitmap(bitmapHam)
         //markerNaturgy
-        val markerViewNaturgy = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewNaturgy : ImageView = markerViewNaturgy.findViewById(R.id.imageViewMarkerNaturgy)
-        val bitmapNaturgy = Bitmap.createScaledBitmap(viewToBitmap(imageViewNaturgy), 96, 96, false)
+        val bitmapNaturgy = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerNaturgy)), 96, 96, false)
         markerNaturgy = BitmapDescriptorFactory.fromBitmap(bitmapNaturgy)
         //markerPetronor
-        val markerViewPetronor = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewPetronor : ImageView = markerViewPetronor.findViewById(R.id.imageViewMarkerPetronor)
-        val bitmapPetronor = Bitmap.createScaledBitmap(viewToBitmap(imageViewPetronor), 96, 96, false)
+        val bitmapPetronor = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerPetronor)), 96, 96, false)
         markerPetronor = BitmapDescriptorFactory.fromBitmap(bitmapPetronor)
         //markerRepsol
-        val markerViewRepsol = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewRepsol : ImageView = markerViewRepsol.findViewById(R.id.imageViewMarkerRepsol)
-        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(imageViewRepsol), 96, 96, false)
+        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerRepsol)), 96, 96, false)
         markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
         //markerShell
-        val markerViewShell = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewShell : ImageView = markerViewShell.findViewById(R.id.imageViewMarkerShell)
-        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(imageViewShell), 96, 96, false)
+        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerShell)), 96, 96, false)
         markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
 
-        val buttonClear : Button = findViewById(R.id.buttonClear)
-
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
-        buttonCalculateRoute = findViewById(R.id.buttonCalculateRoute)
+        val buttonCalculateRoute = findViewById<Button>(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
             start = ""
             end = ""
@@ -172,23 +142,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-        buttonClear.setOnClickListener{
-            map.clear()
-        }
+        //Limpiar el mapa
+        val buttonClear : Button = findViewById(R.id.buttonClear)
+        buttonClear.setOnClickListener{ map.clear() }
         //Spinner para filtro por ciudades
-        var citiesArrayList: List<String> = listCities()
-        spinnerCities = findViewById(R.id.spinnerCities)
-        spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, citiesArrayList)
+        var citiesList: List<String> = listCities()
+        var spinnerCities = findViewById<Spinner>(R.id.spinnerCities)
+        spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, citiesList)
         spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                selectedCity = citiesArrayList[p2]
+                selectedCity = citiesList[p2]
                 searchIdCity(selectedCity)
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 "Error"
             }
         }
+        val buttonSearch : Button = findViewById(R.id.buttonSearch)
+        buttonSearch.setOnClickListener{ markerGasByCity() }
     }
+
     //Arrancar GoogleMaps
     override fun onMapReady(googleMap: GoogleMap){
         map = googleMap
@@ -217,6 +190,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .show()
         }
     }
+    fun onRadioButton(view: View) {
+        if (view is RadioButton) {
+            val checked = view.isChecked
+            when (view.getId()) {
+                R.id.radioAll -> if (checked) {
+                    fuelTypeAll = true
+                    fuelTypeGas95 = false
+                    fuelTypeGasoil = false
+                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+                R.id.radioGas -> if (checked) {
+                    fuelTypeAll = false
+                    fuelTypeGas95 = true
+                    fuelTypeGasoil = false
+                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+                R.id.radioGasoil -> if (checked) {
+                    fuelTypeAll = false
+                    fuelTypeGas95 = false
+                    fuelTypeGasoil = true
+                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+            }
+        }
+    }
+
     private fun createMapFragment(){
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -251,6 +247,134 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //TODO función para iniciar en tu localización actual
     private fun myStartingLocalization(){}
 
+    //Crear markers de las gasolineras con sus descripciones
+    private fun markerGasByCity(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getApiData().create(ApiServiceGasByCity::class.java)
+                .getGasStationsByCity(idSelectedCity)
+            if(call.isSuccessful && ::map.isInitialized){
+                runOnUiThread {
+                    minPrices()
+                    if(fuelTypeAll){
+                        for (i in call.body()!!.gasList){
+                            var markerIcon = selectMarkerIcon(i.label)
+                            var position = convertApiPosToLatLng(i.lati, i.long)
+                            var gasTypeForSnippet = isGasType(i.gas95, i.gasol)
+                            map.addMarker(
+                                MarkerOptions().position(position).title("${i.label}, ${i.address}")
+                                    .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1]).icon(markerIcon)
+                            )
+                        }
+                    }
+                    else{
+                        Log.i("DEPURANDO", "ERROR ALL")
+                    }
+                    if(fuelTypeGas95){
+                        for (i in call.body()!!.gasList){
+                            if(i.gas95.isNotEmpty()){
+                                if( minGas95 == i.gas95.replace(",",".").toDouble()){
+                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
+                                    val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
+                                        136, 136, false)
+                                    map.addMarker(MarkerOptions().position(position).title(
+                                        "${i.label}, ${i.address}")
+                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
+                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
+                                                136,136,false)
+                                            )
+                                        )
+                                    )
+                                }
+                                else{
+                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
+                                    val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
+                                        136, 136, false)
+                                    map.addMarker(MarkerOptions().position(position).title(
+                                        "${i.label}, ${i.address}")
+                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
+                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
+                                                136,136,false)
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                         }
+                    }
+                    else{
+                        Log.i("DEPURANDO", "ERROR GAS")
+                    }
+                    if(fuelTypeGasoil){
+                        for (i in call.body()!!.gasList){
+                            if (i.gasol.isNotEmpty()){
+                                if( minGasoil == i.gasol.replace(",",".").toDouble()){
+                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
+                                    val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
+                                        136, 136, false)
+                                    map.addMarker(MarkerOptions().position(position).title(
+                                        "${i.label}, ${i.address}")
+                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
+                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
+                                                136,136,false)
+                                            )
+                                        )
+                                    )
+                                }
+                                else{
+                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
+                                    val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
+                                        136, 136, false)
+                                    map.addMarker(MarkerOptions().position(position).title(
+                                        "${i.label}, ${i.address}")
+                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
+                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
+                                                136,136,false)
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    else{
+                        Log.i("DEPURANDO", "ERROR GASOIL")
+                    }
+                }
+            }
+        }
+    }
+    //Crear lista de ciudades para mostrarlas en el Spinner
+    private fun minPrices(){
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getApiData().create(ApiServiceGasByCity::class.java)
+                .getGasStationsByCity(idSelectedCity)
+            if (call.isSuccessful) {
+                for (i in call.body()!!.gasList) {
+                    if(i.gas95.isNotEmpty()){
+                        if (minGas95 > i.gas95.replace(",",".").toDouble()){
+                            minGas95 = i.gas95.replace(",",".").toDouble()
+                        }
+                    }
+                    if(i.gasol.isNotEmpty()){
+                        if (minGasoil > i.gasol.replace(",",".").toDouble()){
+                            minGasoil = i.gasol.replace(",",".").toDouble()
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //******************************************************
+
     //Llamada a la API y conversión del JSON
     private fun getRoute() : Retrofit {
         val baseURLRoutes : String = "https://api.openrouteservice.org/"
@@ -282,82 +406,51 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val route = map.addPolyline(polyLineOptions)
         }
     }
+
     //Llamada a la API y conversión del JSON
-    private fun getGasStations() : Retrofit {
-        val baseURLGas : String = "https://sedeaplicaciones.minetur.gob.es/"
-        return Retrofit.Builder().baseUrl(baseURLGas)
+    private fun getApiData(): Retrofit {
+        return Retrofit.Builder().baseUrl("https://sedeaplicaciones.minetur.gob.es/")
             .addConverterFactory(GsonConverterFactory.create()).build()
     }
-    //Crear markes de las gasolineras con sus descripciones
-    private fun markerGasByCity(): ArrayList<String> {
-        val gasArrayList = ArrayList<String>()
+    //Crear lista de ciudades para mostrarlas en el Spinner
+    private fun listCities(): List<String> {
+        val citiesArrayList : MutableList<String> = mutableListOf("")
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getGasStations().create(ApiServiceGasByCity::class.java)
-                .getGasStationsByCity(idSelectedCity)
-            //35 41 38
-            if(call.isSuccessful){
-                if(::map.isInitialized){
-                    runOnUiThread {
-                        var minGas95 = 99.99
-                        var minGas98 = 99.99
-                        var minGasol = 99.99
-                        for (i in call.body()!!.gasList){
-                            var markerIcon = selectMarkerIcon(i.label)
-                            var position = convertApiPosToLatLng(i.lati, i.long)
-                            var gasTypeForSnippet = isGasType(i.gas95, i.gas98, i.gasol)
-                            if(i.gas95.isNotEmpty()){ minGas95 = minPrice(minGas95, i.gas95) }
-                            if(i.gas98.isNotEmpty()){ minGas98 = minPrice(minGas98, i.gas98) }
-                            if(i.gasol.isNotEmpty()){ minGasol = minPrice(minGasol, i.gasol) }
-                            map.addMarker(
-                                MarkerOptions().position(position).title(
-                                    "${i.label}, ${i.address} Horario: ${i.schedule}")
-                                    .snippet(gasTypeForSnippet[0]+gasTypeForSnippet[1]+gasTypeForSnippet[2]).icon(markerIcon)
-                            )
-                        }
-                        for(i in call.body()!!.gasList){
-                            if(i.gas95.isNotEmpty()){
-                                if(i.gas95.replace(",",".").toDouble() == minGas95){
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
-                                    var gasTypeForSnippet = isGasType(i.gas95, i.gas98, i.gasol)
-                                    map.addMarker(
-                                        MarkerOptions().position(position).title(
-                                            "${i.label}, ${i.address} Horario: ${i.schedule}")
-                                            .snippet(gasTypeForSnippet[0]+gasTypeForSnippet[1]+gasTypeForSnippet[2]).icon(markerMinGas95))
-                                }
-                            }
-                        }
-                        for(i in call.body()!!.gasList){
-                            if(i.gas98.isNotEmpty()){
-                                if(i.gas98.replace(",",".").toDouble() == minGas95){
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
-                                    var gasTypeForSnippet = isGasType(i.gas95, i.gas98, i.gasol)
-                                    map.addMarker(
-                                        MarkerOptions().position(position).title(
-                                            "${i.label}, ${i.address} Horario: ${i.schedule}")
-                                            .snippet(gasTypeForSnippet[0]+gasTypeForSnippet[1]+gasTypeForSnippet[2]).icon(markerMinGas98))
-                                }
-                            }
-                        }
-                        for(i in call.body()!!.gasList){
-                            if(i.gasol.isNotEmpty()){
-                                if(i.gasol.replace(",",".").toDouble() == minGas95){
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
-                                    var gasTypeForSnippet = isGasType(i.gas95, i.gas98, i.gasol)
-                                    map.addMarker(
-                                        MarkerOptions().position(position).title(
-                                            "${i.label}, ${i.address} Horario: ${i.schedule}")
-                                            .snippet(gasTypeForSnippet[0]+gasTypeForSnippet[1]+gasTypeForSnippet[2]).icon(markerMinGasol))
-                                }
-                            }
-                        }
+            val call = getApiData().create(ApiServiceCities::class.java).getCities()
+            if (call.isSuccessful) {
+                for (i in call.body()!!) {
+                    citiesArrayList.add(i.provincia)
+                }
+            }
+        }
+        return citiesArrayList
+    }
+    //Buscar la id de la ciudad elegida en el Spinner
+    private fun searchIdCity(city : String){
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = getApiData().create(ApiServiceCities::class.java).getCities()
+            if (call.isSuccessful) {
+                for (i in call.body()!!) {
+                    if(city == i.provincia){
+                        idSelectedCity = i.idProvincia
                     }
                 }
             }
-            else{
-                Log.i("DEPURANDO", "NOT SUCCES")
-            }
         }
-        return gasArrayList
+    }
+    //Convierte las coordenadas de latitud y longitud de la api en LatLng utilizables por googleMaps
+    private fun convertApiPosToLatLng(lat : String, lng : String): LatLng{
+        return LatLng(lat.replace(",",".").toDouble(),
+            lng.replace(",",".").toDouble())
+    }
+    //Crear custom markers
+    private fun viewTextToBitmap(view: View) : Bitmap{
+        view.measure(136, 136)
+        val bitmap = Bitmap.createBitmap(136, 136, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        view.layout(0,0,view.measuredWidth, view.measuredHeight)
+        view.draw(canvas)
+        return bitmap
     }
     //Crear custom markers
     private fun viewToBitmap(view: View) : Bitmap{
@@ -368,13 +461,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         view.draw(canvas)
         return bitmap
     }
-    //Selector de iconos para los markers
+    //Seleccionar el icono para el marker
     private fun selectMarkerIcon(label : String): BitmapDescriptor{
         //markerDefault
-        val MarkerViewDefault = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater).inflate(R.layout.custom_markers, null)
-        val imageViewDefault : ImageView = MarkerViewDefault.findViewById(R.id.imageViewMarkerDefault)
-        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(imageViewDefault), 96, 96, false)
-        markerDefault = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
+        val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
+            .inflate(R.layout.custom_markers, null)
+        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+            (R.id.imageViewMarkerDefault)), 96, 96, false)
         var markerRes = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
         if(label.contains("AVIA")){ markerRes = markerAvia }
         if(label.contains("BP")){ markerRes = markerBp }
@@ -390,67 +483,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if(label.contains("SHELL")){ markerRes = markerShell }
         return markerRes
     }
-    //Convierte las coordenadas de latitud y longitud de la api en LatLng utilizables por googleMaps
-    private fun convertApiPosToLatLng(lat : String, lng : String): LatLng{
-        return LatLng(lat.replace(",",".").toDouble(),
-                                lng.replace(",",".").toDouble())
-    }
     //Mostrará unicamente los productos que tengan el precio en la API
-    private fun isGasType(apiGas95 : String, apigas98 : String, apigasol : String):ArrayList<String>{
+    private fun isGasType(apiGas95 : String, apigasol : String):ArrayList<String>{
         var gas95 = ""
-        var gas98 = ""
         var gasol = ""
         val gasTypeArrayList = ArrayList<String>()
-        if(apiGas95.isNotEmpty()){ gas95 = "Gas 95: "+ apiGas95 +"€, " }
-        if(apigas98.isNotEmpty()){ gas98 = "Gas 98: "+ apigas98 +"€, " }
-        if(apigasol.isNotEmpty()){ gasol = "Gasoleo: "+ apigasol +"€, " }
+        if(apiGas95.isNotEmpty()){ gas95 = "Gas 95: "+ apiGas95 +"€ " }
+        if(apigasol.isNotEmpty()){ gasol = "Gasoleo: "+ apigasol +"€ " }
         gasTypeArrayList.add(gas95)
-        gasTypeArrayList.add(gas98)
         gasTypeArrayList.add(gasol)
         return gasTypeArrayList
-    }
-    //Calcula el precio mínimo de cada combustible
-    private fun minPrice(minPrice : Double, newPrice : String) : Double{
-        var res = newPrice.replace(",",".").toDouble()
-        if(res > minPrice){ res = minPrice }
-        return res
-    }
-
-    //Llamada a la API y conversión del JSON
-    private fun getCities(): Retrofit {
-        return Retrofit.Builder().baseUrl("https://sedeaplicaciones.minetur.gob.es/")
-            .addConverterFactory(GsonConverterFactory.create()).build()
-    }
-    //Crear lista de ciudades para mostrarlas en el Spinner
-    private fun listCities(): List<String> {
-        val citiesArrayList : MutableList<String> = mutableListOf("")
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = getCities().create(ApiServiceCities::class.java).getCities()
-            if (call.isSuccessful) {
-                for (i in call.body()!!) {
-                    citiesArrayList.add(i.provincia)
-                }
-                Log.i("DEPURANDO", citiesArrayList.toString())
-            } else {
-                Log.i("DEPURANDO", "NOT SUCCES")
-            }
-        }
-        return citiesArrayList
-    }
-    //Buscar la id de la ciudad elegida en el Spinner
-    private fun searchIdCity(city : String){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = getCities().create(ApiServiceCities::class.java).getCities()
-            if (call.isSuccessful) {
-                Log.i("DEPURANDO", "SUCCESsssss")
-                for (i in call.body()!!) {
-                    if(city == i.provincia){
-                        idSelectedCity = i.idProvincia
-                        Log.i("DEPURANDO", "id"+idSelectedCity)
-                    }
-                }
-                markerGasByCity()
-            }
-        }
     }
 }
