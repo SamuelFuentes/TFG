@@ -31,6 +31,7 @@ import com.tfg.gasstations.data.model.routes.RouteResponse
 import com.tfg.gasstations.data.network.ApiServiceCities
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
 import com.tfg.gasstations.data.network.ApiServiceRoutes
+import com.tfg.gasstations.domain.GetMinPrices
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -40,8 +41,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var fuelTypeAll : Boolean = true
     private var fuelTypeGas95 : Boolean = false
     private var fuelTypeGasoil : Boolean = false
-    private var minGas95 : Double = 99.99
-    private var minGasoil : Double = 99.99
     private lateinit var markerAvia : BitmapDescriptor
     private lateinit var markerBp : BitmapDescriptor
     private lateinit var markerCarrefour : BitmapDescriptor
@@ -253,11 +252,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Crear markers de las gasolineras con sus descripciones
     private fun markerGasByCity(){
         CoroutineScope(Dispatchers.IO).launch {
+            var min95 = GetMinPrices().minPrice95(idSelectedCity)
+            var minGasoil = GetMinPrices().minPriceGasoil(idSelectedCity)
             val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
             if(call.isSuccessful && ::map.isInitialized){
                 runOnUiThread {
-                    minPrices()
                     if(fuelTypeAll){
                         for (i in call.body()!!.gasList){
                             var markerIcon = selectMarkerIcon(i.label)
@@ -266,13 +266,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             map.addMarker(
                                 MarkerOptions().position(position).title("${i.label}, ${i.address}")
                                     .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1]).icon(markerIcon)
+                                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_avia))
                             )
                         }
                     }
                     if(fuelTypeGas95){
                         for (i in call.body()!!.gasList){
                             if(i.gas95.isNotEmpty()){
-                                if( minGas95 == i.gas95.replace(",",".").toDouble()){
+                                if( min95 == i.gas95.replace(",",".").toDouble()){
                                     var position = convertApiPosToLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
@@ -308,7 +309,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     if(fuelTypeGasoil){
                         for (i in call.body()!!.gasList){
                             if (i.gasol.isNotEmpty()){
-                                if( minGasoil == i.gasol.replace(",",".").toDouble()){
+                                if(minGasoil == i.gasol.replace(",",".").toDouble()){
                                     var position = convertApiPosToLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
@@ -346,26 +347,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
     //Crear lista de ciudades para mostrarlas en el Spinner
-    private fun minPrices(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
-                .getGasStationsByCity(idSelectedCity)
-            if (call.isSuccessful) {
-                for (i in call.body()!!.gasList) {
-                    if(i.gas95.isNotEmpty()){
-                        if (minGas95 > i.gas95.replace(",",".").toDouble()){
-                            minGas95 = i.gas95.replace(",",".").toDouble()
-                        }
-                    }
-                    if(i.gasol.isNotEmpty()){
-                        if (minGasoil > i.gasol.replace(",",".").toDouble()){
-                            minGasoil = i.gasol.replace(",",".").toDouble()
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     //******************************************************
 
