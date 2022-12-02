@@ -1,5 +1,19 @@
 <resources>
+    <string name="hint_email">Correo Electrónico</string>
+    <string name="hint_pass">Contraseña</string>
+    <string name="recover_pass"><u>Recordar contraseña</u></string>
+    <string name="login">Acceder"</string>
+    <string name="dont_have_acc">¿No tienes cuenta?</string>
+    <string name="create_acc"><u>Crear Cuenta</u></string>
+    <string name="confirm_pass">Confirme Contraseña</string>
+    <string name="enter_mail">Introduzca su email</string>
+    <string name="change_pass">Solicitar cambio de contraseña</string>
+    <string name="cities">Ciudades:</string>
+    <string name="all">Todos</string>
+    <string name="gas">Gas 95</string>
+    <string name="gasoil">Gasoil</string>
+    <string name="delete_all">Borrar Todo</string>
+    <string name="route">Crear Ruta</string>
+
     <string name="app_name">GasStations</string>
-    <string name="textCreateAccount"><u>Crear Cuenta</u></string>
-    <string name="textForgotPassword"><u>Recordar contraseña</u></string>
 </resources>

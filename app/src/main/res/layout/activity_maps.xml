@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,7 +10,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MapsActivity"/>
+        tools:context=".MapsActivity" />
     <LinearLayout
         android:layout_width="307dp"
         android:layout_height="80dp"
@@ -32,10 +31,9 @@
                     android:layout_width="72dp"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="Ciudades:"/>
+                    android:text="@string/cities" />
                 <Spinner
                     android:id="@+id/spinnerCities"
-                    android:contentDescription="Ciudades"
                     android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:layout_weight="1" />
@@ -52,26 +50,26 @@
                         android:layout_height="match_parent"
                         android:checked="true"
                         android:onClick="onRadioButton"
-                        android:text="Todos"/>
+                        android:text="@string/all" />
                     <RadioButton
                         android:id="@+id/radioGas"
                         android:layout_width="85dp"
                         android:layout_height="match_parent"
                         android:onClick="onRadioButton"
-                        android:text="Gas 95"/>
+                        android:text="@string/gas" />
                     <RadioButton
                         android:id="@+id/radioGasoil"
                         android:layout_width="85dp"
                         android:layout_height="match_parent"
                         android:onClick="onRadioButton"
-                        android:text="Gasoil"/>
+                        android:text="@string/gasoil" />
                 </RadioGroup>
         </LinearLayout>
         <Button
             android:id="@+id/buttonSearch"
             android:layout_width="wrap_content"
             android:layout_height="60dp"
-            android:text="Button"/>
+            android:text="Button" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
@@ -84,13 +82,13 @@
             android:id="@+id/buttonClear"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:text="Borrar Todo"/>
+            android:text="@string/delete_all" />
 
         <Button
             android:id="@+id/buttonCalculateRoute"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
-            android:text="Crear Ruta"/>
+            android:text="@string/route" />
     </LinearLayout>
     <TextView
         android:id="@+id/textViewNormal"
@@ -104,7 +102,7 @@
         android:textColor="@color/white"
         tools:layout_editor_absoluteX="163dp"
         tools:layout_editor_absoluteY="88dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
     <TextView
         android:id="@+id/textViewMinPrice"
         android:layout_marginStart="0dp"
@@ -117,5 +115,5 @@
         android:textColor="@color/black"
         tools:layout_editor_absoluteX="163dp"
         tools:layout_editor_absoluteY="88dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 </FrameLayout>

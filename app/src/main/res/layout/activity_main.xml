@@ -23,7 +23,7 @@
         android:layout_width="250dp"
         android:layout_height="55dp"
         android:ems="10"
-        android:hint="Correo Electrónico"
+        android:hint="@string/hint_email"
         android:inputType="textEmailAddress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
         android:layout_width="250dp"
         android:layout_height="55dp"
         android:ems="10"
-        android:hint="Contraseña"
+        android:hint="@string/hint_pass"
         android:inputType="textPassword"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:text="@string/textForgotPassword"
+        android:text="@string/recover_pass"
         android:textColor="#002DFE"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -64,7 +64,7 @@
         android:id="@+id/buttonSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Acceder"
+        android:text="@string/login"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -88,7 +88,7 @@
             android:id="@+id/textViewNotAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="¿No tienes cuenta?" />
+            android:text="@string/dont_have_acc" />
 
         <Space
             android:layout_width="wrap_content"
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
-            android:text="@string/textCreateAccount"
+            android:text="@string/create_acc"
             android:textColor="#002DFE" />
     </LinearLayout>
 
