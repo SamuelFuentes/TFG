@@ -28,14 +28,14 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".ForgotPasswordActivity"
+            android:name=".ui.ForgotPasswordActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".SignUpActivity"
+            android:name=".ui.SignUpActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -49,7 +49,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

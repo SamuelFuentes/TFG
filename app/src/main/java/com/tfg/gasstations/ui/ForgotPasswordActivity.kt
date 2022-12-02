@@ -1,4 +1,4 @@
-package com.tfg.gasstations
+package com.tfg.gasstations.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,7 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tfg.gasstations.R
 import com.tfg.gasstations.databinding.ActivityForgotPasswordBinding
 
 class ForgotPasswordActivity : AppCompatActivity() {

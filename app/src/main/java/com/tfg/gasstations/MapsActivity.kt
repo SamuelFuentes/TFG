@@ -26,8 +26,11 @@ import com.google.android.gms.maps.model.PolylineOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import com.tfg.gasstations.core.RetrofitHelper
+import com.tfg.gasstations.data.model.routes.RouteResponse
+import com.tfg.gasstations.data.network.ApiServiceCities
+import com.tfg.gasstations.data.network.ApiServiceGasByCity
+import com.tfg.gasstations.data.network.ApiServiceRoutes
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -198,17 +201,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     fuelTypeAll = true
                     fuelTypeGas95 = false
                     fuelTypeGasoil = false
-                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+                }
                 R.id.radioGas -> if (checked) {
                     fuelTypeAll = false
                     fuelTypeGas95 = true
                     fuelTypeGasoil = false
-                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+                }
                 R.id.radioGasoil -> if (checked) {
                     fuelTypeAll = false
                     fuelTypeGas95 = false
                     fuelTypeGasoil = true
-                    Log.i("DEPURANDO", fuelTypeAll.toString()+fuelTypeGas95.toString()+fuelTypeGasoil.toString())}
+                }
             }
         }
     }
@@ -250,7 +253,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Crear markers de las gasolineras con sus descripciones
     private fun markerGasByCity(){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getApiData().create(ApiServiceGasByCity::class.java)
+            val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
             if(call.isSuccessful && ::map.isInitialized){
                 runOnUiThread {
@@ -265,9 +268,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1]).icon(markerIcon)
                             )
                         }
-                    }
-                    else{
-                        Log.i("DEPURANDO", "ERROR ALL")
                     }
                     if(fuelTypeGas95){
                         for (i in call.body()!!.gasList){
@@ -305,9 +305,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
                          }
                     }
-                    else{
-                        Log.i("DEPURANDO", "ERROR GAS")
-                    }
                     if(fuelTypeGasoil){
                         for (i in call.body()!!.gasList){
                             if (i.gasol.isNotEmpty()){
@@ -344,9 +341,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
                         }
                     }
-                    else{
-                        Log.i("DEPURANDO", "ERROR GASOIL")
-                    }
                 }
             }
         }
@@ -354,7 +348,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Crear lista de ciudades para mostrarlas en el Spinner
     private fun minPrices(){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getApiData().create(ApiServiceGasByCity::class.java)
+            val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
             if (call.isSuccessful) {
                 for (i in call.body()!!.gasList) {
@@ -376,22 +370,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //******************************************************
 
     //Llamada a la API y conversión del JSON
-    private fun getRoute() : Retrofit {
-        val baseURLRoutes : String = "https://api.openrouteservice.org/"
-        return Retrofit.Builder().baseUrl(baseURLRoutes)
-            .addConverterFactory(GsonConverterFactory.create()).build()
-    }
+
     //Crear rutas
     private fun createRoute(){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getRoute().create(ApiServiceRoutes::class.java)
+            val call = RetrofitHelper.getApiRoutes().create(ApiServiceRoutes::class.java)
                 .getRoute("5b3ce3597851110001cf624863cc2b9245844cacb6cf551d2d8490c1",
                     start,end)
             if (call.isSuccessful){
                 drawRoute(call.body())
-            }
-            else{
-                Log.i("DEPURANDO","NOT SUCCESSFUL")
             }
         }
     }
@@ -407,16 +394,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    //Llamada a la API y conversión del JSON
-    private fun getApiData(): Retrofit {
-        return Retrofit.Builder().baseUrl("https://sedeaplicaciones.minetur.gob.es/")
-            .addConverterFactory(GsonConverterFactory.create()).build()
-    }
     //Crear lista de ciudades para mostrarlas en el Spinner
     private fun listCities(): List<String> {
         val citiesArrayList : MutableList<String> = mutableListOf("")
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getApiData().create(ApiServiceCities::class.java).getCities()
+            val call = RetrofitHelper.getApiGas().create(ApiServiceCities::class.java).getCities()
             if (call.isSuccessful) {
                 for (i in call.body()!!) {
                     citiesArrayList.add(i.provincia)
@@ -428,7 +410,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Buscar la id de la ciudad elegida en el Spinner
     private fun searchIdCity(city : String){
         CoroutineScope(Dispatchers.IO).launch {
-            val call = getApiData().create(ApiServiceCities::class.java).getCities()
+            val call = RetrofitHelper.getApiGas().create(ApiServiceCities::class.java).getCities()
             if (call.isSuccessful) {
                 for (i in call.body()!!) {
                     if(city == i.provincia){

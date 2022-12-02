@@ -1,4 +1,4 @@
-package com.tfg.gasstations
+package com.tfg.gasstations.ui
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,6 +7,8 @@ import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tfg.gasstations.MapsActivity
+import com.tfg.gasstations.R
 import com.tfg.gasstations.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +50,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(i)
         }
     }
+
     //Función para acceder a la aplicación principal mediante FireBase y comprobación de correo verificado
     private fun signIn(email : String, password : String){
         firebaseAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this){
