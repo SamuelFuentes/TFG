@@ -3,50 +3,47 @@ package com.tfg.gasstations
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tfg.gasstations.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_main)
-
-        val buttonSignIn : Button = findViewById(R.id.buttonSignIn)
-        val editTextEmail : TextView = findViewById(R.id.editTextSignInEmail)
-        val editTextPassword : TextView = findViewById(R.id.editTextSignInPassword)
-        val textViewSignUp : TextView = findViewById(R.id.textViewSignUp)
-        val textViewForgotPassword : TextView = findViewById(R.id.textViewForgotPassword)
-        val byPass : Button = findViewById(R.id.byPass)
+        setContentView(binding.root)
         firebaseAuth = Firebase.auth
 
-        byPass.setOnClickListener(){
+        //Accede a la aplicación
+        binding.bSignIn.setOnClickListener{
+            if(binding.eTSignInEmail.text.toString().isEmpty() || binding.eTSignInPassword.text.toString().isEmpty()){
+                Toast.makeText(baseContext,"Debe rellenar ambos campos.", Toast.LENGTH_SHORT).show()
+            }
+            else{
+                signIn(binding.eTSignInEmail.text.toString(), binding.eTSignInPassword.text.toString())
+            }
+        }
+
+        binding.byPass.setOnClickListener(){
             val i = Intent(this, MapsActivity::class.java)
             startActivity(i)
         }
 
-        //Accede a la aplicación
-        buttonSignIn.setOnClickListener(){
-            if(editTextEmail.text.toString().isEmpty() || editTextPassword.text.toString().isEmpty()){
-                Toast.makeText(baseContext,"Debe rellenar ambos campos.", Toast.LENGTH_SHORT).show()
-            }
-            else{
-                signIn(editTextEmail.text.toString(), editTextPassword.text.toString())
-            }
-        }
         //Accede a creación de cuentas
-        textViewSignUp.setOnClickListener(){
+        binding.tVSignUp.setOnClickListener(){
             val i = Intent(this, SignUpActivity::class.java)
             startActivity(i)
         }
         //Accede a recuperación de cuentas
-        textViewForgotPassword.setOnClickListener(){
+        binding.tVForgotPassword.setOnClickListener(){
             val i = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(i)
         }
@@ -59,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                 val user = firebaseAuth.currentUser
                 val verify = user?.isEmailVerified
                 if(verify==true){
-                    val i = Intent(this, GasStationsActivity::class.java)
+                    val i = Intent(this, MapsActivity::class.java)
                     startActivity(i)
                 }
                 else{

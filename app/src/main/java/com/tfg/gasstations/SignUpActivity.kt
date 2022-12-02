@@ -3,48 +3,48 @@ package com.tfg.gasstations
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tfg.gasstations.databinding.ActivitySignUpBinding
 
 class SignUpActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySignUpBinding
     private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_sign_up)
-        val editTextSignUpEmail : TextView = findViewById(R.id.editTextSignUpEmail)
-        val editTextSignUpPassword1 : TextView = findViewById(R.id.editTextSignUpPassword1)
-        val editTextSignUpPassword2 : TextView = findViewById(R.id.editTextSignUpPassword2)
-        val buttonSignUp : Button = findViewById(R.id.buttonSignUp)
+        setContentView(binding.root)
+
         firebaseAuth = Firebase.auth
         //Verificación de campos y crear cuenta
-        buttonSignUp.setOnClickListener(){
-            if(editTextSignUpEmail.text.toString().isEmpty()){
+        binding.bSignUp.setOnClickListener(){
+            if(binding.eTSignUpEmail.text.toString().isEmpty()){
                 Toast.makeText(baseContext,"Introduzca su correo electrónico", Toast.LENGTH_SHORT).show()
-                editTextSignUpEmail.requestFocus()
+                binding.eTSignUpEmail.requestFocus()
             }
-            else if(editTextSignUpPassword1.text.toString().isEmpty()){
+            else if(binding.eTSignUpPass1.text.toString().isEmpty()){
                 Toast.makeText(baseContext,"Introduzca su contraseña", Toast.LENGTH_SHORT).show()
-                editTextSignUpPassword1.requestFocus()
+                binding.eTSignUpPass1.requestFocus()
             }
-            else if(editTextSignUpPassword2.text.toString().isEmpty()) {
+            else if(binding.eTSignUpPass2.text.toString().isEmpty()) {
                 Toast.makeText(baseContext, "Confirme su contraseña", Toast.LENGTH_SHORT).show()
-                editTextSignUpPassword2.requestFocus()
+                binding.eTSignUpPass2.requestFocus()
             }
-            else if(editTextSignUpPassword1.text.toString() != editTextSignUpPassword2.text.toString() ){
+            else if(binding.eTSignUpPass1.text.toString() != binding.eTSignUpPass2.text.toString() ){
                 Toast.makeText(baseContext,"Ambas contraseñas debe de ser iguales.", Toast.LENGTH_SHORT).show()
-                editTextSignUpPassword2.requestFocus()
+                binding.eTSignUpPass2.requestFocus()
             }
-            else if(editTextSignUpPassword1.text.toString().length<6){
+            else if(binding.eTSignUpPass1.text.toString().length<6){
                 Toast.makeText(baseContext,"La contraseña debe de ser de 6 o más caracteres.", Toast.LENGTH_SHORT).show()
-                editTextSignUpPassword1.requestFocus()
+                binding.eTSignUpPass1.requestFocus()
             }
             else{
-                signUp(editTextSignUpEmail.text.toString(), editTextSignUpPassword1.text.toString())
+                signUp(binding.eTSignUpEmail.text.toString(), binding.eTSignUpPass1.text.toString())
             }
         }
     }

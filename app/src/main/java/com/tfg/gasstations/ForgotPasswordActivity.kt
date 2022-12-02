@@ -3,26 +3,27 @@ package com.tfg.gasstations
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.tfg.gasstations.databinding.ActivityForgotPasswordBinding
 
 class ForgotPasswordActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityForgotPasswordBinding
     private lateinit var firebaseAuth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_forgot_password)
+        setContentView(binding.root)
 
-        val editTextEmailForgotPasswordRecover : TextView = findViewById(R.id.editTextEmailForgotPasswordRecover)
-        val buttonForgotPasswordRecover : Button = findViewById(R.id.buttonForgotPasswordRecover)
         firebaseAuth = Firebase.auth
 
         //Mandar correo de recuperación
-        buttonForgotPasswordRecover.setOnClickListener(){
-            recoverPassword(editTextEmailForgotPasswordRecover.text.toString())
+        binding.bForgotPasswordRecover.setOnClickListener(){
+            recoverPassword(binding.eTEmailForgotPasswordRecover.text.toString())
         }
     }
     //Función para solicitar correo de recuperación

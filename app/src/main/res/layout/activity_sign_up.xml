@@ -7,7 +7,7 @@
     tools:context=".SignUpActivity">
 
     <EditText
-        android:id="@+id/editTextSignUpEmail"
+        android:id="@+id/eTSignUpEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -23,7 +23,7 @@
         app:layout_constraintVertical_bias="0.2" />
 
     <EditText
-        android:id="@+id/editTextSignUpPassword1"
+        android:id="@+id/eTSignUpPass1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -38,7 +38,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.35" />
     <EditText
-        android:id="@+id/editTextSignUpPassword2"
+        android:id="@+id/eTSignUpPass2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="80dp"
@@ -53,7 +53,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.45" />
     <Button
-        android:id="@+id/buttonSignUp"
+        android:id="@+id/bSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="158dp"

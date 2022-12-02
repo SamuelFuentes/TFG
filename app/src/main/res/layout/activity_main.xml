@@ -7,7 +7,7 @@
     tools:context=".MainActivity">
 
     <ImageView
-        android:id="@+id/imageViewAppIcon"
+        android:id="@+id/iVAppIcon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,7 +19,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
     <EditText
-        android:id="@+id/editTextSignInEmail"
+        android:id="@+id/eTSignInEmail"
         android:layout_width="250dp"
         android:layout_height="55dp"
         android:ems="10"
@@ -33,7 +33,7 @@
         app:layout_constraintVertical_bias="0.45" />
 
     <EditText
-        android:id="@+id/editTextSignInPassword"
+        android:id="@+id/eTSignInPassword"
         android:layout_width="250dp"
         android:layout_height="55dp"
         android:ems="10"
@@ -47,7 +47,7 @@
         app:layout_constraintVertical_bias="0.55" />
 
     <TextView
-        android:id="@+id/textViewForgotPassword"
+        android:id="@+id/tVForgotPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
@@ -57,11 +57,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextSignInPassword"
+        app:layout_constraintTop_toBottomOf="@+id/eTSignInPassword"
         app:layout_constraintVertical_bias="0.035" />
 
     <Button
-        android:id="@+id/buttonSignIn"
+        android:id="@+id/bSignIn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/login"
@@ -85,7 +85,7 @@
         app:layout_constraintVertical_bias="0.85">
 
         <TextView
-            android:id="@+id/textViewNotAccount"
+            android:id="@+id/tVNotAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/dont_have_acc" />
@@ -96,7 +96,7 @@
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/textViewSignUp"
+            android:id="@+id/tVSignUp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="true"
