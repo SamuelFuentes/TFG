@@ -228,7 +228,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         for (i in call.body()!!.gasList){
                             var markerIcon = selectMarkerIcon(i.label)
                             var position = GetApiLatLng().toLatLng(i.lati, i.long)
-                            var gasTypeForSnippet = isGasType(i.gas95, i.gasol)
+                            var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
                             map.addMarker(
                                 MarkerOptions().position(position).title("${i.label}, ${i.address}")
                                     .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1]).icon(markerIcon)
@@ -375,16 +375,5 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if(label.contains("REPSOL")){ markerRes = markerRepsol }
         if(label.contains("SHELL")){ markerRes = markerShell }
         return markerRes
-    }
-    //Mostrará unicamente los productos que tengan el precio en la API
-    private fun isGasType(apiGas95 : String, apigasol : String):ArrayList<String>{
-        var gas95 = ""
-        var gasol = ""
-        val gasTypeArrayList = ArrayList<String>()
-        if(apiGas95.isNotEmpty()){ gas95 = "Gas 95: "+ apiGas95 +"€ " }
-        if(apigasol.isNotEmpty()){ gasol = "Gasoleo: "+ apigasol +"€ " }
-        gasTypeArrayList.add(gas95)
-        gasTypeArrayList.add(gasol)
-        return gasTypeArrayList
     }
 }
