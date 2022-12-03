@@ -11,7 +11,7 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="570dp"
+        android:layout_height="match_parent"
         android:gravity="bottom"
         android:layout_gravity="bottom"
         tools:context=".ui.MapsActivity" />
@@ -45,7 +45,7 @@
 
     <LinearLayout
         android:id="@+id/lLMenu"
-        android:layout_width="296dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/light_gray"
@@ -62,28 +62,26 @@
             android:id="@+id/rGPosition"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:orientation="horizontal">
 
             <RadioButton
                 android:id="@+id/r1km"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onRBPosition"
-                android:checked="true"
                 android:text="@string/onekm" />
 
             <RadioButton
                 android:id="@+id/r2km"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="onRBPosition"
                 android:text="@string/twokm" />
 
             <RadioButton
                 android:id="@+id/r6km"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:onClick="onRBPosition"
                 android:text="@string/sixkm" />
         </RadioGroup>
 
@@ -98,6 +96,8 @@
             android:id="@+id/rGFuels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
             android:orientation="horizontal">
 
             <RadioButton
@@ -105,21 +105,21 @@
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
                 android:checked="true"
-                android:onClick="onRBfuelType"
+                android:onClick="onRadioButton"
                 android:text="@string/all" />
 
             <RadioButton
                 android:id="@+id/rGas"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:onClick="onRBfuelType"
+                android:onClick="onRadioButton"
                 android:text="@string/gas" />
 
             <RadioButton
                 android:id="@+id/rGasoil"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:onClick="onRBfuelType"
+                android:onClick="onRadioButton"
                 android:text="@string/gasoil" />
         </RadioGroup>
 

@@ -16,7 +16,7 @@
     <string name="twokm"><b>~2,5 km</b></string>
     <string name="sixkm"><b>~6,5 km</b></string>
     <string name="fuelType"><b><u>Filtrar por tipo de combustible:</u></b></string>
-    <string name="cities"><b><u>Filtrar por ciudades:</u></b></string>
+    <string name="cities"><b><u>Filtrar por provincia:</u></b></string>
     <string name="routes"><b><u>Crear ruta:</u></b></string>
 
     <string name="app_name">GasStations</string>

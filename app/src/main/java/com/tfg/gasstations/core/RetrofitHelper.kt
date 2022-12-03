@@ -16,11 +16,4 @@ object RetrofitHelper {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-    fun getApiAllGas(): Retrofit{
-        return Retrofit.Builder()
-            .baseUrl("https://sedeaplicaciones.minetur.gob.es/")
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
 }
