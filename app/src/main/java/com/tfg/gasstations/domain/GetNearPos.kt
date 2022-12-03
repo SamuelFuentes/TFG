@@ -4,30 +4,16 @@ import android.util.Log
 
 class GetNearPos {
     //calcula si están proximos 2 coordenadas
-    fun calculateNear(lat1: Double, lon1: Double, lat2: Double, lon2: Double):Boolean{
-        Log.i("DEPURANDO","lat1 "+lat1.toString())
-        Log.i("DEPURANDO","lat2 "+lat2.toString())
-        Log.i("DEPURANDO","lon1 "+lon1.toString())
-        Log.i("DEPURANDO","lon2 "+lon2.toString())
+    fun calculateNear(lat1: Double, lon1: Double, lat2: Double, lon2: Double, distance: String):Boolean{
         var resultado : Boolean = false
         var resLon = lon1-lon2
-        Log.i("DEPURANDO","RES long "+resLon.toString())
-        if(resLon<0){
-            resLon *= -1
-            Log.i("DEPURANDO","RES long CAMBIAO"+resLon.toString())
-        }
+        if(resLon<0){ resLon *= -1 }
         var resLat = lat1-lat2
-        Log.i("DEPURANDO", "RES lat "+resLat.toString())
-        if(resLat<0){
-            resLat*=-1
-            Log.i("DEPURANDO","RES lat CAMBIAO "+resLat.toString())
-        }
+        if(resLat<0){ resLat*=-1 }
         var res = resLat+resLon
-        Log.i("DEPURANDO","RES "+res.toString())
-        if(res< 0.05 && res > -0.05){
-            Log.i("DEPURANDO", res.toString()+" Ta cerca")
-            resultado = true
-        }
+        if(distance == "1km" && res< 0.01 && res > -0.01){ resultado = true }
+        if(distance == "2km" && res< 0.025 && res > -0.025){ resultado = true }
+        if(distance == "6km" && res< 0.05 && res > -0.05){ resultado = true }
         return resultado
     }
     //1,km --> 0.01
