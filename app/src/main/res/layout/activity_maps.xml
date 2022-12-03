@@ -11,10 +11,10 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="490dp"
+        android:layout_height="570dp"
         android:gravity="bottom"
         android:layout_gravity="bottom"
-        tools:context=".MapsActivity" />
+        tools:context=".ui.MapsActivity" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -42,7 +42,7 @@
                     android:text="@string/cities" />
 
                 <Spinner
-                    android:id="@+id/spinnerCities"
+                    android:id="@+id/spCities"
                     android:layout_width="match_parent"
                     android:layout_height="32dp"
                     android:layout_weight="1"
@@ -57,14 +57,14 @@
                 tools:layout_editor_absoluteY="186dp">
 
                 <RadioGroup
-                    android:id="@+id/radioGroupFuels"
+                    android:id="@+id/rGFuels"
                     android:layout_width="253dp"
                     android:layout_height="48dp"
                     android:gravity="bottom"
                     android:orientation="horizontal">
 
                     <RadioButton
-                        android:id="@+id/radioAll"
+                        android:id="@+id/rAll"
                         android:layout_width="85dp"
                         android:layout_height="match_parent"
                         android:checked="true"
@@ -72,14 +72,14 @@
                         android:text="@string/all"/>
 
                     <RadioButton
-                        android:id="@+id/radioGas"
+                        android:id="@+id/rGas"
                         android:layout_width="85dp"
                         android:layout_height="match_parent"
                         android:onClick="onRadioButton"
                         android:text="@string/gas"/>
 
                     <RadioButton
-                        android:id="@+id/radioGasoil"
+                        android:id="@+id/rGasoil"
                         android:layout_width="85dp"
                         android:layout_height="match_parent"
                         android:onClick="onRadioButton"
@@ -87,7 +87,7 @@
                 </RadioGroup>
 
                 <ImageButton
-                    android:id="@+id/buttonCalculateRoute"
+                    android:id="@+id/bRoute"
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
                     app:srcCompat="@drawable/icon_route32x32"
@@ -96,7 +96,7 @@
         </LinearLayout>
 
         <ImageButton
-            android:id="@+id/buttonSearch"
+            android:id="@+id/bSearch"
             android:layout_width="70dp"
             android:layout_height="match_parent"
             app:srcCompat="@drawable/icon_search40x40"
@@ -112,7 +112,7 @@
         tools:layout_editor_absoluteY="186dp">
 
         <ImageButton
-            android:id="@+id/buttonClear"
+            android:id="@+id/bClear"
             android:layout_width="50dp"
             android:layout_height="50dp"
             app:srcCompat="@drawable/icon_delete50x50"
@@ -121,7 +121,7 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/textViewNormal"
+        android:id="@+id/tVNormal"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_weight="1"
@@ -134,7 +134,7 @@
         tools:layout_editor_absoluteY="88dp"
         android:visibility="gone" />
     <TextView
-        android:id="@+id/textViewMinPrice"
+        android:id="@+id/tVMinPrice"
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_weight="1"

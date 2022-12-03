@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.tfg.gasstations.ui.MainActivity
+import com.tfg.gasstations.ui.MapsActivity
 
 class GasStationsActivity : AppCompatActivity() {
     private lateinit var firebaseAuth: FirebaseAuth

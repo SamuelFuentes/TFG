@@ -1,4 +1,4 @@
-package com.tfg.gasstations
+package com.tfg.gasstations.ui
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.tfg.gasstations.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,16 +45,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         createMapFragment()
         GetCities().listCities()
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
-        val buttonCalculateRoute = findViewById<ImageButton>(R.id.buttonCalculateRoute)
+        val buttonCalculateRoute = findViewById<ImageButton>(R.id.bRoute)
         buttonCalculateRoute.setOnClickListener{
             customRoute()
         }
         //Limpiar el mapa
-        val buttonClear : ImageButton = findViewById(R.id.buttonClear)
+        val buttonClear : ImageButton = findViewById(R.id.bClear)
         buttonClear.setOnClickListener{ map.clear() }
         //Spinner para filtro por ciudades
         var citiesList: List<String> = GetCities().listCities()
-        var spinnerCities = findViewById<Spinner>(R.id.spinnerCities)
+        var spinnerCities = findViewById<Spinner>(R.id.spCities)
         spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, citiesList)
         spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -65,7 +66,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 "Error"
             }
         }
-        val buttonSearch : ImageButton = findViewById(R.id.buttonSearch)
+        val buttonSearch : ImageButton = findViewById(R.id.bSearch)
         buttonSearch.setOnClickListener{ markerGasByCity() }
     }
     //Arrancar GoogleMaps
@@ -99,9 +100,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         if (view is RadioButton) {
             val checked= view.isChecked
             when (view.getId()) {
-                R.id.radioAll -> if (checked) { fuelType= "ALL" }
-                R.id.radioGas -> if (checked) { fuelType= "GAS95" }
-                R.id.radioGasoil -> if (checked) { fuelType= "GASOIL"}
+                R.id.rAll -> if (checked) { fuelType= "ALL" }
+                R.id.rGas -> if (checked) { fuelType= "GAS95" }
+                R.id.rGasoil -> if (checked) { fuelType= "GASOIL"}
             }
         }
     }
@@ -126,7 +127,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Toast.makeText(this, "Active permisos de localización", Toast.LENGTH_SHORT).show()
         }else{
             ActivityCompat.requestPermissions(this, arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_LOCATION)
+                Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_LOCATION
+            )
         }
     }
     //TODO función para iniciar en tu localización actual
@@ -152,8 +154,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
                             if(min95== i.gas95.replace(",",".").toDouble()){
-                                findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
-                                val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                findViewById<TextView>(R.id.tVMinPrice).text = i.gas95+"€"
+                                val imageViewShell : TextView = findViewById(R.id.tVMinPrice)
                                 val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
                                     .viewTextToBitmap(imageViewShell), 136, 136, false)
                                 map.addMarker(MarkerOptions().position(position).title(
@@ -165,8 +167,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     4000,
                                     null)
                             }else{
-                                findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
-                                val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                findViewById<TextView>(R.id.tVNormal).text = i.gas95+"€"
+                                val imageViewShell : TextView = findViewById(R.id.tVNormal)
                                 val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
                                     .viewTextToBitmap(imageViewShell), 136, 136, false)
                                 map.addMarker(MarkerOptions().position(position).title(
@@ -177,8 +179,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
                             if(minGasoil== i.gasol.replace(",",".").toDouble()){
-                                findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
-                                val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                findViewById<TextView>(R.id.tVMinPrice).text = i.gasol+"€"
+                                val imageViewShell : TextView = findViewById(R.id.tVMinPrice)
                                 val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
                                     .viewTextToBitmap(imageViewShell), 136, 136, false)
                                 map.addMarker(MarkerOptions().position(position).title(
@@ -190,8 +192,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     4000,
                                     null)
                             }else{
-                                findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
-                                val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                findViewById<TextView>(R.id.tVNormal).text = i.gasol+"€"
+                                val imageViewShell : TextView = findViewById(R.id.tVNormal)
                                 val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
                                     .viewTextToBitmap(imageViewShell), 136, 136, false)
                                 map.addMarker(MarkerOptions().position(position).title(
