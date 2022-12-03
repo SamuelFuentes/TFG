@@ -143,96 +143,63 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun myStartingLocalization(){}
 
     //Crear markers de las gasolineras con sus descripciones
-    private fun markerGasByCity(){
+    private fun markerGasByCity() {
         CoroutineScope(Dispatchers.IO).launch {
             var min95 = GetMinPrices().minPrice95(idSelectedCity)
             var minGasoil = GetMinPrices().minPriceGasoil(idSelectedCity)
             val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
-            if(call.isSuccessful && ::map.isInitialized){
-                runOnUiThread {
-                    if(fuelType== "ALL"){
-                        for (i in call.body()!!.gasList){
-                            var markerIcon = GetMarkerIcon().select(i.label)
-                            var position = GetApiLatLng().toLatLng(i.lati, i.long)
+            if (call.isSuccessful && ::map.isInitialized){
+                runOnUiThread{
+                    for(i in call.body()!!.gasList){
+                        var position = GetApiLatLng().toLatLng(i.lati,i.long)
+                        if(fuelType=="ALL"){
                             var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
                             map.addMarker(
                                 MarkerOptions().position(position).title("${i.label}, ${i.address}")
                                     .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
-                                    .icon(markerIcon)
-                                    //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_avia))
-                            )
+                                    .icon(GetMarkerIcon().select(i.label)))
                         }
-                    }
-                    if(fuelType== "GAS95"){
-                        for (i in call.body()!!.gasList){
-                            if(i.gas95.isNotEmpty()){
-                                if( min95 == i.gas95.replace(",",".").toDouble()){
-                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
-                                    findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}")
-                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
-                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
-                                                136,136,false)
-                                            )
-                                        )
-                                    )
-                                }
-                                else{
-                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
-                                    findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.textViewNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}")
-                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
-                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
-                                                136,136,false)
-                                            )
-                                        )
-                                    )
-                                }
+                        if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
+                            if(min95== i.gas95.replace(",",".").toDouble()){
+                                findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
+                                val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
+                                map.addMarker(MarkerOptions().position(position).title(
+                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
+                                        (bitmapShell, 136,136,false))))
+                            }else{
+                                findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
+                                val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
+                                map.addMarker(MarkerOptions().position(position).title(
+                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
+                                        (bitmapShell, 136,136,false))))
                             }
-                         }
-                    }
-                    if(fuelType== "GASOIL"){
-                        for (i in call.body()!!.gasList){
-                            if (i.gasol.isNotEmpty()){
-                                if(minGasoil == i.gasol.replace(",",".").toDouble()){
-                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
-                                    findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}")
-                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
-                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
-                                                136,136,false)
-                                            )
-                                        )
-                                    )
-                                }
-                                else{
-                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
-                                    findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.textViewNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}")
-                                        .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
-                                            .fromBitmap(Bitmap.createScaledBitmap(bitmapShell,
-                                                136,136,false)
-                                            )
-                                        )
-                                    )
-                                }
+                        }
+                        if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
+                            if(minGasoil== i.gasol.replace(",",".").toDouble()){
+                                findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
+                                val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
+                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
+                                map.addMarker(MarkerOptions().position(position).title(
+                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
+                                        (bitmapShell, 136,136,false))))
+                            }else{
+                                findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
+                                val imageViewShell : TextView = findViewById(R.id.textViewNormal)
+                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
+                                map.addMarker(MarkerOptions().position(position).title(
+                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
+                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
+                                        (bitmapShell, 136,136,false))))
                             }
                         }
                     }
