@@ -70,18 +70,22 @@
                 android:id="@+id/r1km"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onRBPosition"
+                android:checked="true"
                 android:text="@string/onekm" />
 
             <RadioButton
                 android:id="@+id/r2km"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:onClick="onRBPosition"
                 android:text="@string/twokm" />
 
             <RadioButton
                 android:id="@+id/r6km"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:onClick="onRBPosition"
                 android:text="@string/sixkm" />
         </RadioGroup>
 
@@ -105,21 +109,21 @@
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
                 android:checked="true"
-                android:onClick="onRadioButton"
+                android:onClick="onRBfuelType"
                 android:text="@string/all" />
 
             <RadioButton
                 android:id="@+id/rGas"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:onClick="onRadioButton"
+                android:onClick="onRBfuelType"
                 android:text="@string/gas" />
 
             <RadioButton
                 android:id="@+id/rGasoil"
                 android:layout_width="85dp"
                 android:layout_height="match_parent"
-                android:onClick="onRadioButton"
+                android:onClick="onRBfuelType"
                 android:text="@string/gasoil" />
         </RadioGroup>
 
