@@ -4,11 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
@@ -17,7 +15,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
@@ -54,7 +51,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //Limpiar el mapa
         val buttonClear : Button = findViewById(R.id.buttonClear)
         buttonClear.setOnClickListener{ map.clear() }
-
         //Spinner para filtro por ciudades
         var citiesList: List<String> = GetCities().listCities()
         var spinnerCities = findViewById<Spinner>(R.id.spinnerCities)
@@ -85,8 +81,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
             else{
                 Toast.makeText(this, "Active permisos de localización", Toast.LENGTH_SHORT).show()
-            }
-            else -> {}
+            }else -> {}
         }
     }
     //Al maximizar la aplicación, vuelve a comprobar los permisos de ubicación
@@ -121,20 +116,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     @SuppressLint("MissingPermission")
     private fun enableMyLocation(){
         if (!::map.isInitialized) return
-        if (isPermissionsFineGranted()){
-            map.isMyLocationEnabled = true
-        }
-        else{
-            requestLocationPermission()
-        }
+        if (isPermissionsFineGranted()){ map.isMyLocationEnabled = true
+        }else{ requestLocationPermission() }
     }
     //Solicita permisos de ubicación
     private fun requestLocationPermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
             Toast.makeText(this, "Active permisos de localización", Toast.LENGTH_SHORT).show()
-        }
-        else{
+        }else{
             ActivityCompat.requestPermissions(this, arrayOf(
                 Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_CODE_LOCATION)
         }
@@ -217,15 +207,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (start.isEmpty()){
                     start = "${it.longitude}"+","+"${it.latitude}"
                     val startRoute = LatLng(it.latitude,it.longitude)
-                    map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                    map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
                     startAnimatedRoute = startRoute
-                }
-                else if(end.isEmpty()){
+                }else if(end.isEmpty()){
                     end = "${it.longitude}"+","+"${it.latitude}"
                     val endRoute = LatLng(it.latitude,it.longitude)
-                    map.addMarker(MarkerOptions().position(endRoute).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
-                }
-                else{
+                    map.addMarker(MarkerOptions().position(endRoute).title("Destino")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
+                }else{
                     CoroutineScope(Dispatchers.IO).launch {
                         drawRoute(GetCreateRoutes().createRoute(start, end))
                     }
