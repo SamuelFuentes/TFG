@@ -44,12 +44,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         createMapFragment()
         GetCities().listCities()
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
-        val buttonCalculateRoute = findViewById<Button>(R.id.buttonCalculateRoute)
+        val buttonCalculateRoute = findViewById<ImageButton>(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
             customRoute()
         }
         //Limpiar el mapa
-        val buttonClear : Button = findViewById(R.id.buttonClear)
+        val buttonClear : ImageButton = findViewById(R.id.buttonClear)
         buttonClear.setOnClickListener{ map.clear() }
         //Spinner para filtro por ciudades
         var citiesList: List<String> = GetCities().listCities()
@@ -65,7 +65,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 "Error"
             }
         }
-        val buttonSearch : Button = findViewById(R.id.buttonSearch)
+        val buttonSearch : ImageButton = findViewById(R.id.buttonSearch)
         buttonSearch.setOnClickListener{ markerGasByCity() }
     }
     //Arrancar GoogleMaps
@@ -160,6 +160,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
                                     .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
                                         (bitmapShell, 136,136,false))))
+                                map.animateCamera(
+                                    CameraUpdateFactory.newLatLngZoom(position, 16f),
+                                    4000,
+                                    null)
                             }else{
                                 findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
                                 val imageViewShell : TextView = findViewById(R.id.textViewNormal)
@@ -181,6 +185,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
                                     .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
                                         (bitmapShell, 136,136,false))))
+                                map.animateCamera(
+                                    CameraUpdateFactory.newLatLngZoom(position, 16f),
+                                    4000,
+                                    null)
                             }else{
                                 findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
                                 val imageViewShell : TextView = findViewById(R.id.textViewNormal)
@@ -197,7 +205,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
+    //Crear ruta custom
     private fun customRoute(){
         start = ""
         end = ""
