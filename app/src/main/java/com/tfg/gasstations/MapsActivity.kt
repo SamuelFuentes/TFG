@@ -8,7 +8,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -28,19 +27,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.tfg.gasstations.core.RetrofitHelper
 import com.tfg.gasstations.data.model.routes.RouteResponse
-import com.tfg.gasstations.data.network.ApiServiceCities
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
-import com.tfg.gasstations.data.network.ApiServiceRoutes
+import com.tfg.gasstations.domain.GetCities
+import com.tfg.gasstations.domain.GetCreateRoutes
 import com.tfg.gasstations.domain.GetMinPrices
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map : GoogleMap
-    private lateinit var selectedCity : String
-    private var idSelectedCity : String = "00"
-    private var fuelTypeAll : Boolean = true
-    private var fuelTypeGas95 : Boolean = false
-    private var fuelTypeGasoil : Boolean = false
+    private lateinit var idSelectedCity : String
+    private var fuelType: String = "ALL"
     private lateinit var markerAvia : BitmapDescriptor
     private lateinit var markerBp : BitmapDescriptor
     private lateinit var markerCarrefour : BitmapDescriptor
@@ -63,7 +59,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
         createMapFragment()
-        listCities()
+        GetCities().listCities()
         val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             .inflate(R.layout.custom_markers, null)
         //markerAVIA
@@ -118,43 +114,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         val buttonCalculateRoute = findViewById<Button>(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
-            start = ""
-            end = ""
-            var startAnimatedRoute = LatLng(0.0,0.0)
-            if(::map.isInitialized){
-                map.setOnMapClickListener {
-                    if (start.isEmpty()){
-                        start = "${it.longitude}"+","+"${it.latitude}"
-                        val startRoute = LatLng(it.latitude,it.longitude)
-                        map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
-                        startAnimatedRoute = startRoute
-                    }
-                    else if(end.isEmpty()){
-                        end = "${it.longitude}"+","+"${it.latitude}"
-                        val endRoute = LatLng(it.latitude,it.longitude)
-                        map.addMarker(MarkerOptions().position(endRoute).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
-                    }
-                    else{
-                        createRoute()
-                        map.animateCamera(
-                            CameraUpdateFactory.newLatLngZoom(startAnimatedRoute, 16f),
-                            4000,
-                            null)
-                    }
-                }
-            }
+            customRoute()
         }
+        //*****
         //Limpiar el mapa
         val buttonClear : Button = findViewById(R.id.buttonClear)
         buttonClear.setOnClickListener{ map.clear() }
+
         //Spinner para filtro por ciudades
-        var citiesList: List<String> = listCities()
+        var citiesList: List<String> = GetCities().listCities()
         var spinnerCities = findViewById<Spinner>(R.id.spinnerCities)
         spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, citiesList)
         spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                selectedCity = citiesList[p2]
-                searchIdCity(selectedCity)
+                //selectedCity = citiesList[p2]
+                CoroutineScope(Dispatchers.IO).launch {
+                    idSelectedCity = GetCities().searchIdCity(citiesList[p2])
+                }
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 "Error"
@@ -163,12 +139,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val buttonSearch : Button = findViewById(R.id.buttonSearch)
         buttonSearch.setOnClickListener{ markerGasByCity() }
     }
-
+    //*****
     //Arrancar GoogleMaps
     override fun onMapReady(googleMap: GoogleMap){
         map = googleMap
         enableMyLocation()
     }
+    //*****
     @SuppressLint("MissingSuperCall", "MissingPermission")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         when(requestCode){
@@ -181,6 +158,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             else -> {}
         }
     }
+    //*****
     //Al maximizar la aplicación, vuelve a comprobar los permisos de ubicación
     @SuppressLint("MissingPermission")
     override fun onResumeFragments() {
@@ -192,37 +170,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .show()
         }
     }
-    fun onRadioButton(view: View) {
+    //*****
+    fun onRadioButton(view: View){
         if (view is RadioButton) {
-            val checked = view.isChecked
+            val checked= view.isChecked
             when (view.getId()) {
-                R.id.radioAll -> if (checked) {
-                    fuelTypeAll = true
-                    fuelTypeGas95 = false
-                    fuelTypeGasoil = false
-                }
-                R.id.radioGas -> if (checked) {
-                    fuelTypeAll = false
-                    fuelTypeGas95 = true
-                    fuelTypeGasoil = false
-                }
-                R.id.radioGasoil -> if (checked) {
-                    fuelTypeAll = false
-                    fuelTypeGas95 = false
-                    fuelTypeGasoil = true
-                }
+                R.id.radioAll -> if (checked) { fuelType= "ALL" }
+                R.id.radioGas -> if (checked) { fuelType= "GAS95" }
+                R.id.radioGasoil -> if (checked) { fuelType= "GASOIL"}
             }
         }
     }
-
+    //*****
     private fun createMapFragment(){
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
+    //*****
     //Comprueba si están los permisos de ubicación
     private fun isPermissionsFineGranted() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-
+    //*****
     //Activa la localización si están los permisos de ubicación concedidos
     @SuppressLint("MissingPermission")
     private fun enableMyLocation(){
@@ -234,6 +202,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             requestLocationPermission()
         }
     }
+    //*****
     //Solicita permisos de ubicación
     private fun requestLocationPermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -258,7 +227,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .getGasStationsByCity(idSelectedCity)
             if(call.isSuccessful && ::map.isInitialized){
                 runOnUiThread {
-                    if(fuelTypeAll){
+                    if(fuelType== "ALL"){
                         for (i in call.body()!!.gasList){
                             var markerIcon = selectMarkerIcon(i.label)
                             var position = convertApiPosToLatLng(i.lati, i.long)
@@ -270,7 +239,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             )
                         }
                     }
-                    if(fuelTypeGas95){
+                    if(fuelType== "GAS95"){
                         for (i in call.body()!!.gasList){
                             if(i.gas95.isNotEmpty()){
                                 if( min95 == i.gas95.replace(",",".").toDouble()){
@@ -306,7 +275,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
                          }
                     }
-                    if(fuelTypeGasoil){
+                    if(fuelType== "GASOIL"){
                         for (i in call.body()!!.gasList){
                             if (i.gasol.isNotEmpty()){
                                 if(minGasoil == i.gasol.replace(",",".").toDouble()){
@@ -346,20 +315,34 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-    //Crear lista de ciudades para mostrarlas en el Spinner
 
-    //******************************************************
-
-    //Llamada a la API y conversión del JSON
-
-    //Crear rutas
-    private fun createRoute(){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = RetrofitHelper.getApiRoutes().create(ApiServiceRoutes::class.java)
-                .getRoute("5b3ce3597851110001cf624863cc2b9245844cacb6cf551d2d8490c1",
-                    start,end)
-            if (call.isSuccessful){
-                drawRoute(call.body())
+    private fun customRoute(){
+        start = ""
+        end = ""
+        var startAnimatedRoute = LatLng(0.0,0.0)
+        if(::map.isInitialized){
+            map.setOnMapClickListener {
+                if (start.isEmpty()){
+                    start = "${it.longitude}"+","+"${it.latitude}"
+                    val startRoute = LatLng(it.latitude,it.longitude)
+                    map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                    startAnimatedRoute = startRoute
+                }
+                else if(end.isEmpty()){
+                    end = "${it.longitude}"+","+"${it.latitude}"
+                    val endRoute = LatLng(it.latitude,it.longitude)
+                    map.addMarker(MarkerOptions().position(endRoute).title("Destino").icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
+                }
+                else{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        drawRoute(GetCreateRoutes().createRoute(start, end))
+                    }
+                    map.animateCamera(
+                        CameraUpdateFactory.newLatLngZoom(startAnimatedRoute, 16f),
+                        4000,
+                        null
+                    )
+                }
             }
         }
     }
@@ -372,33 +355,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         runOnUiThread{
             val route = map.addPolyline(polyLineOptions)
-        }
-    }
-
-    //Crear lista de ciudades para mostrarlas en el Spinner
-    private fun listCities(): List<String> {
-        val citiesArrayList : MutableList<String> = mutableListOf("")
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = RetrofitHelper.getApiGas().create(ApiServiceCities::class.java).getCities()
-            if (call.isSuccessful) {
-                for (i in call.body()!!) {
-                    citiesArrayList.add(i.provincia)
-                }
-            }
-        }
-        return citiesArrayList
-    }
-    //Buscar la id de la ciudad elegida en el Spinner
-    private fun searchIdCity(city : String){
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = RetrofitHelper.getApiGas().create(ApiServiceCities::class.java).getCities()
-            if (call.isSuccessful) {
-                for (i in call.body()!!) {
-                    if(city == i.provincia){
-                        idSelectedCity = i.idProvincia
-                    }
-                }
-            }
         }
     }
     //Convierte las coordenadas de latitud y longitud de la api en LatLng utilizables por googleMaps
