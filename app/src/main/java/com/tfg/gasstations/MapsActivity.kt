@@ -28,9 +28,7 @@ import kotlinx.coroutines.launch
 import com.tfg.gasstations.core.RetrofitHelper
 import com.tfg.gasstations.data.model.routes.RouteResponse
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
-import com.tfg.gasstations.domain.GetCities
-import com.tfg.gasstations.domain.GetCreateRoutes
-import com.tfg.gasstations.domain.GetMinPrices
+import com.tfg.gasstations.domain.*
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -63,51 +61,51 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             .inflate(R.layout.custom_markers, null)
         //markerAVIA
-        val bitmapAvia = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapAvia = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerAvia)), 96, 96, false)
         markerAvia = BitmapDescriptorFactory.fromBitmap(bitmapAvia)
         //markerBp
-        val bitmapBp = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapBp = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerBp)), 96, 96, false)
         markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
         //markerCarrefour
-        val bitmapCarrefour = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapCarrefour = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerCarrefour)), 96, 96, false)
         markerCarrefour = BitmapDescriptorFactory.fromBitmap(bitmapCarrefour)
         //markerCepsa
-        val bitmapCepsa = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapCepsa = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerCepsa)), 96, 96, false)
         markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
         //markerDisa
-        val bitmapDisa = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapDisa = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerDisa)), 96, 96, false)
         markerDisa = BitmapDescriptorFactory.fromBitmap(bitmapDisa)
         //markerEroski
-        val bitmapEroski = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapEroski = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerEroski)), 96, 96, false)
         markerEroski = BitmapDescriptorFactory.fromBitmap(bitmapEroski)
         //markerGalp
-        val bitmapGalp = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapGalp = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerGalp)), 96, 96, false)
         markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
         //markerHam
-        val bitmapHam = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapHam = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerHam)), 96, 96, false)
         markerHam = BitmapDescriptorFactory.fromBitmap(bitmapHam)
         //markerNaturgy
-        val bitmapNaturgy = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapNaturgy = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerNaturgy)), 96, 96, false)
         markerNaturgy = BitmapDescriptorFactory.fromBitmap(bitmapNaturgy)
         //markerPetronor
-        val bitmapPetronor = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapPetronor = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerPetronor)), 96, 96, false)
         markerPetronor = BitmapDescriptorFactory.fromBitmap(bitmapPetronor)
         //markerRepsol
-        val bitmapRepsol = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapRepsol = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerRepsol)), 96, 96, false)
         markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
         //markerShell
-        val bitmapShell = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerShell)), 96, 96, false)
         markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
 
@@ -127,7 +125,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         spinnerCities.adapter = ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, citiesList)
         spinnerCities.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                //selectedCity = citiesList[p2]
                 CoroutineScope(Dispatchers.IO).launch {
                     idSelectedCity = GetCities().searchIdCity(citiesList[p2])
                 }
@@ -230,7 +227,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     if(fuelType== "ALL"){
                         for (i in call.body()!!.gasList){
                             var markerIcon = selectMarkerIcon(i.label)
-                            var position = convertApiPosToLatLng(i.lati, i.long)
+                            var position = GetApiLatLng().toLatLng(i.lati, i.long)
                             var gasTypeForSnippet = isGasType(i.gas95, i.gasol)
                             map.addMarker(
                                 MarkerOptions().position(position).title("${i.label}, ${i.address}")
@@ -243,11 +240,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         for (i in call.body()!!.gasList){
                             if(i.gas95.isNotEmpty()){
                                 if( min95 == i.gas95.replace(",",".").toDouble()){
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewMinPrice).text = i.gas95+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
-                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
-                                        136, 136, false)
+                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
                                     map.addMarker(MarkerOptions().position(position).title(
                                         "${i.label}, ${i.address}")
                                         .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
@@ -258,11 +255,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     )
                                 }
                                 else{
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewNormal).text = i.gas95+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
-                                        136, 136, false)
+                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
                                     map.addMarker(MarkerOptions().position(position).title(
                                         "${i.label}, ${i.address}")
                                         .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
@@ -279,11 +276,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         for (i in call.body()!!.gasList){
                             if (i.gasol.isNotEmpty()){
                                 if(minGasoil == i.gasol.replace(",",".").toDouble()){
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewMinPrice).text = i.gasol+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewMinPrice)
-                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
-                                        136, 136, false)
+                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
                                     map.addMarker(MarkerOptions().position(position).title(
                                         "${i.label}, ${i.address}")
                                         .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
@@ -294,11 +291,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                     )
                                 }
                                 else{
-                                    var position = convertApiPosToLatLng(i.lati, i.long)
+                                    var position = GetApiLatLng().toLatLng(i.lati, i.long)
                                     findViewById<TextView>(R.id.textViewNormal).text = i.gasol+"€"
                                     val imageViewShell : TextView = findViewById(R.id.textViewNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(viewTextToBitmap(imageViewShell),
-                                        136, 136, false)
+                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
+                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
                                     map.addMarker(MarkerOptions().position(position).title(
                                         "${i.label}, ${i.address}")
                                         .snippet("Horario: " + i.schedule).icon(BitmapDescriptorFactory
@@ -357,35 +354,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val route = map.addPolyline(polyLineOptions)
         }
     }
-    //Convierte las coordenadas de latitud y longitud de la api en LatLng utilizables por googleMaps
-    private fun convertApiPosToLatLng(lat : String, lng : String): LatLng{
-        return LatLng(lat.replace(",",".").toDouble(),
-            lng.replace(",",".").toDouble())
-    }
-    //Crear custom markers
-    private fun viewTextToBitmap(view: View) : Bitmap{
-        view.measure(136, 136)
-        val bitmap = Bitmap.createBitmap(136, 136, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.layout(0,0,view.measuredWidth, view.measuredHeight)
-        view.draw(canvas)
-        return bitmap
-    }
-    //Crear custom markers
-    private fun viewToBitmap(view: View) : Bitmap{
-        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-        val bitmap = Bitmap.createBitmap(view.measuredWidth, view.measuredHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        view.layout(0,0,view.measuredWidth, view.measuredHeight)
-        view.draw(canvas)
-        return bitmap
-    }
     //Seleccionar el icono para el marker
     private fun selectMarkerIcon(label : String): BitmapDescriptor{
         //markerDefault
         val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
             .inflate(R.layout.custom_markers, null)
-        val bitmapDefault = Bitmap.createScaledBitmap(viewToBitmap(markerView.findViewById
+        val bitmapDefault = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
             (R.id.imageViewMarkerDefault)), 96, 96, false)
         var markerRes = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
         if(label.contains("AVIA")){ markerRes = markerAvia }
