@@ -8,12 +8,16 @@
     <string name="confirm_pass">Confirme Contraseña</string>
     <string name="enter_mail">Introduzca su email</string>
     <string name="change_pass">Solicitar cambio de contraseña</string>
-    <string name="cities">Ciudades:</string>
-    <string name="all">Todos</string>
-    <string name="gas">Gas 95</string>
-    <string name="gasoil">Gasoil</string>
-    <string name="delete_all">Borrar Todo</string>
-    <string name="route">Crear Ruta</string>
+    <string name="all"><b>Todos</b></string>
+    <string name="gas"><b>Gas 95</b></string>
+    <string name="gasoil"><b>Gasoil</b></string>
+    <string name="position"><b><u>Filtrar respecto a la distancia de mi ubicación:</u></b></string>
+    <string name="onekm"><b>~1 km</b></string>
+    <string name="twokm"><b>~2,5 km</b></string>
+    <string name="sixkm"><b>~6,5 km</b></string>
+    <string name="fuelType"><b><u>Filtrar por tipo de combustible:</u></b></string>
+    <string name="cities"><b><u>Filtrar por ciudades:</u></b></string>
+    <string name="routes"><b><u>Crear ruta:</u></b></string>
 
     <string name="app_name">GasStations</string>
 </resources>

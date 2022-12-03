@@ -16,4 +16,12 @@ object RetrofitHelper {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+    fun getAllGas(): Retrofit{
+        return Retrofit.Builder()
+            .baseUrl("https://sedeaplicaciones.minetur.gob.es/" +
+                    "ServiciosRESTCarburantes/PreciosCarburantes/EstacionesTerrestres/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
 }

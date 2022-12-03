@@ -7,6 +7,9 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Layout
+import android.util.Log
+import android.view.Gravity.*
 import android.view.View
 import android.widget.*
 import androidx.core.app.ActivityCompat
@@ -25,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.tfg.gasstations.core.RetrofitHelper
 import com.tfg.gasstations.data.model.routes.RouteResponse
+import com.tfg.gasstations.data.network.ApiServiceAllGas
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
 import com.tfg.gasstations.domain.*
 
@@ -33,6 +37,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map : GoogleMap
     private lateinit var idSelectedCity : String
     private var fuelType: String = "ALL"
+    private var distance: String = "1km"
     private var start : String = ""
     private var end   : String = ""
     companion object {
@@ -44,6 +49,18 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
         createMapFragment()
         GetCities().listCities()
+        val layoutMenu = findViewById<LinearLayout>(R.id.lLMenu)
+        val buttonMenu = findViewById<ImageButton>(R.id.bMenu)
+        buttonMenu.setOnClickListener{
+            if (layoutMenu.visibility == View.VISIBLE){
+                layoutMenu.visibility = View.GONE
+                buttonMenu.foregroundGravity = RIGHT
+            }else{
+                layoutMenu.visibility = View.VISIBLE
+                buttonMenu.foregroundGravity = LEFT
+            }
+        }
+
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         val buttonCalculateRoute = findViewById<ImageButton>(R.id.bRoute)
         buttonCalculateRoute.setOnClickListener{
@@ -67,7 +84,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         val buttonSearch : ImageButton = findViewById(R.id.bSearch)
-        buttonSearch.setOnClickListener{ markerGasByCity() }
+        buttonSearch.setOnClickListener{
+            markNearPos()
+            //markerGasByCity()
+        }
     }
     //Arrancar GoogleMaps
     override fun onMapReady(googleMap: GoogleMap){
@@ -96,13 +116,23 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .show()
         }
     }
-    fun onRadioButton(view: View){
+    fun onRBPosition(view: View){
+        if (view is RadioButton) {
+            val checked= view.isChecked
+            when (view.getId()) {
+                R.id.r1km -> if (checked) { fuelType= "1km" }
+                R.id.r2km -> if (checked) { fuelType= "2km" }
+                R.id.r6km -> if (checked) { fuelType= "6km" }
+            }
+        }
+    }
+    fun onRBfuelType(view: View){
         if (view is RadioButton) {
             val checked= view.isChecked
             when (view.getId()) {
                 R.id.rAll -> if (checked) { fuelType= "ALL" }
                 R.id.rGas -> if (checked) { fuelType= "GAS95" }
-                R.id.rGasoil -> if (checked) { fuelType= "GASOIL"}
+                R.id.rGasoil -> if (checked) { fuelType= "GASOIL" }
             }
         }
     }
@@ -154,6 +184,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                         }
                         if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
                             if(min95== i.gas95.replace(",",".").toDouble()){
+                                Log.i("DEPURANDO",i.lati+" "+ i.long)
                                 findViewById<TextView>(R.id.tVMinPrice).text = i.gas95+"€"
                                 val imageViewShell : TextView = findViewById(R.id.tVMinPrice)
                                 val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
@@ -211,21 +242,33 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun customRoute(){
         start = ""
         end = ""
+        var lat1: Double = 0.0
+        var lon1: Double = 0.0
+        var lat2: Double = 0.0
+        var lon2: Double = 0.0
         var startAnimatedRoute = LatLng(0.0,0.0)
         if(::map.isInitialized){
             map.setOnMapClickListener {
+
                 if (start.isEmpty()){
                     start = "${it.longitude}"+","+"${it.latitude}"
+                    lat1 = it.latitude
+                    lon1 = it.longitude
                     val startRoute = LatLng(it.latitude,it.longitude)
                     map.addMarker(MarkerOptions().position(startRoute).title("Inicio de ruta")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
                     startAnimatedRoute = startRoute
                 }else if(end.isEmpty()){
+                    lat2 = it.latitude
+                    lon2 = it.longitude
                     end = "${it.longitude}"+","+"${it.latitude}"
                     val endRoute = LatLng(it.latitude,it.longitude)
                     map.addMarker(MarkerOptions().position(endRoute).title("Destino")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA)))
                 }else{
+                    Log.i("DEPURANDO","Start"+start)
+                    Log.i("DEPURANDO","End"+end)
+                    GetNearPos().calculateNear(lat1 ,lon1, lat2, lon2)
                     CoroutineScope(Dispatchers.IO).launch {
                         drawRoute(GetCreateRoutes().createRoute(start, end))
                     }
@@ -245,5 +288,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             polyLineOptions.add(LatLng(it[1],it[0])).width(6.8F).color(Color.RED)
         }
         runOnUiThread{ val route = map.addPolyline(polyLineOptions) }
+    }
+
+    //añade markers a las gasolineras cercanas
+    private fun markNearPos() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
+                .getAllGasStations()
+            if (call.isSuccessful && ::map.isInitialized) {
+                runOnUiThread {
+                    for (i in call.body()!!.gasList) {
+                        var lat = 37.38616884467704
+                        var lon = -5.985885187983513
+                        if(GetNearPos().calculateNear(lat, lon, i.lati.replace(",",".").toDouble(), i.long.replace(",",".").toDouble())){
+                            var position = GetApiLatLng().toLatLng(i.lati,i.long)
+                            map.addMarker(MarkerOptions().position(position).title("CERCA"))
+                        }
+                    }
+                }
+            }
+        }
     }
 }
