@@ -35,18 +35,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var map : GoogleMap
     private lateinit var idSelectedCity : String
     private var fuelType: String = "ALL"
-    private lateinit var markerAvia : BitmapDescriptor
-    private lateinit var markerBp : BitmapDescriptor
-    private lateinit var markerCarrefour : BitmapDescriptor
-    private lateinit var markerCepsa : BitmapDescriptor
-    private lateinit var markerDisa : BitmapDescriptor
-    private lateinit var markerEroski : BitmapDescriptor
-    private lateinit var markerGalp : BitmapDescriptor
-    private lateinit var markerHam : BitmapDescriptor
-    private lateinit var markerNaturgy : BitmapDescriptor
-    private lateinit var markerPetronor : BitmapDescriptor
-    private lateinit var markerRepsol : BitmapDescriptor
-    private lateinit var markerShell : BitmapDescriptor
     private var start : String = ""
     private var end   : String = ""
     companion object {
@@ -58,63 +46,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
         createMapFragment()
         GetCities().listCities()
-        val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-            .inflate(R.layout.custom_markers, null)
-        //markerAVIA
-        val bitmapAvia = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerAvia)), 96, 96, false)
-        markerAvia = BitmapDescriptorFactory.fromBitmap(bitmapAvia)
-        //markerBp
-        val bitmapBp = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerBp)), 96, 96, false)
-        markerBp = BitmapDescriptorFactory.fromBitmap(bitmapBp)
-        //markerCarrefour
-        val bitmapCarrefour = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerCarrefour)), 96, 96, false)
-        markerCarrefour = BitmapDescriptorFactory.fromBitmap(bitmapCarrefour)
-        //markerCepsa
-        val bitmapCepsa = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerCepsa)), 96, 96, false)
-        markerCepsa = BitmapDescriptorFactory.fromBitmap(bitmapCepsa)
-        //markerDisa
-        val bitmapDisa = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerDisa)), 96, 96, false)
-        markerDisa = BitmapDescriptorFactory.fromBitmap(bitmapDisa)
-        //markerEroski
-        val bitmapEroski = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerEroski)), 96, 96, false)
-        markerEroski = BitmapDescriptorFactory.fromBitmap(bitmapEroski)
-        //markerGalp
-        val bitmapGalp = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerGalp)), 96, 96, false)
-        markerGalp = BitmapDescriptorFactory.fromBitmap(bitmapGalp)
-        //markerHam
-        val bitmapHam = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerHam)), 96, 96, false)
-        markerHam = BitmapDescriptorFactory.fromBitmap(bitmapHam)
-        //markerNaturgy
-        val bitmapNaturgy = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerNaturgy)), 96, 96, false)
-        markerNaturgy = BitmapDescriptorFactory.fromBitmap(bitmapNaturgy)
-        //markerPetronor
-        val bitmapPetronor = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerPetronor)), 96, 96, false)
-        markerPetronor = BitmapDescriptorFactory.fromBitmap(bitmapPetronor)
-        //markerRepsol
-        val bitmapRepsol = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerRepsol)), 96, 96, false)
-        markerRepsol = BitmapDescriptorFactory.fromBitmap(bitmapRepsol)
-        //markerShell
-        val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerShell)), 96, 96, false)
-        markerShell = BitmapDescriptorFactory.fromBitmap(bitmapShell)
-
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         val buttonCalculateRoute = findViewById<Button>(R.id.buttonCalculateRoute)
         buttonCalculateRoute.setOnClickListener{
             customRoute()
         }
-        //*****
         //Limpiar el mapa
         val buttonClear : Button = findViewById(R.id.buttonClear)
         buttonClear.setOnClickListener{ map.clear() }
@@ -136,13 +72,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val buttonSearch : Button = findViewById(R.id.buttonSearch)
         buttonSearch.setOnClickListener{ markerGasByCity() }
     }
-    //*****
     //Arrancar GoogleMaps
     override fun onMapReady(googleMap: GoogleMap){
         map = googleMap
         enableMyLocation()
     }
-    //*****
     @SuppressLint("MissingSuperCall", "MissingPermission")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray){
         when(requestCode){
@@ -155,7 +89,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             else -> {}
         }
     }
-    //*****
     //Al maximizar la aplicación, vuelve a comprobar los permisos de ubicación
     @SuppressLint("MissingPermission")
     override fun onResumeFragments() {
@@ -167,7 +100,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .show()
         }
     }
-    //*****
     fun onRadioButton(view: View){
         if (view is RadioButton) {
             val checked= view.isChecked
@@ -178,16 +110,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-    //*****
     private fun createMapFragment(){
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
-    //*****
     //Comprueba si están los permisos de ubicación
     private fun isPermissionsFineGranted() = ContextCompat.checkSelfPermission(
         this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-    //*****
     //Activa la localización si están los permisos de ubicación concedidos
     @SuppressLint("MissingPermission")
     private fun enableMyLocation(){
@@ -199,13 +128,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             requestLocationPermission()
         }
     }
-    //*****
     //Solicita permisos de ubicación
     private fun requestLocationPermission(){
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                 Manifest.permission.ACCESS_FINE_LOCATION)) {
-            Toast.makeText(this, "Active permisos de localización", Toast.LENGTH_SHORT)
-                .show()
+            Toast.makeText(this, "Active permisos de localización", Toast.LENGTH_SHORT).show()
         }
         else{
             ActivityCompat.requestPermissions(this, arrayOf(
@@ -226,12 +153,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 runOnUiThread {
                     if(fuelType== "ALL"){
                         for (i in call.body()!!.gasList){
-                            var markerIcon = selectMarkerIcon(i.label)
+                            var markerIcon = GetMarkerIcon().select(i.label)
                             var position = GetApiLatLng().toLatLng(i.lati, i.long)
                             var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
                             map.addMarker(
                                 MarkerOptions().position(position).title("${i.label}, ${i.address}")
-                                    .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1]).icon(markerIcon)
+                                    .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
+                                    .icon(markerIcon)
                                     //.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker_avia))
                             )
                         }
@@ -347,33 +275,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun drawRoute(body : RouteResponse?){
         val polyLineOptions = PolylineOptions()
         body?.features?.first()?.geometry?.coordinates?.forEach{
-            polyLineOptions.add(LatLng(it[1],it[0])).width(6.8F)
-                .color(Color.RED)
+            polyLineOptions.add(LatLng(it[1],it[0])).width(6.8F).color(Color.RED)
         }
-        runOnUiThread{
-            val route = map.addPolyline(polyLineOptions)
-        }
-    }
-    //Seleccionar el icono para el marker
-    private fun selectMarkerIcon(label : String): BitmapDescriptor{
-        //markerDefault
-        val markerView = (getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-            .inflate(R.layout.custom_markers, null)
-        val bitmapDefault = Bitmap.createScaledBitmap(GetViewToBitmap().viewToBitmap(markerView.findViewById
-            (R.id.imageViewMarkerDefault)), 96, 96, false)
-        var markerRes = BitmapDescriptorFactory.fromBitmap(bitmapDefault)
-        if(label.contains("AVIA")){ markerRes = markerAvia }
-        if(label.contains("BP")){ markerRes = markerBp }
-        if(label.contains("CARREFOUR")){ markerRes = markerCarrefour }
-        if(label.contains("CEPSA")){ markerRes = markerCepsa }
-        if(label.contains("DISA")){ markerRes = markerDisa }
-        if(label.contains("EROSKI")){ markerRes = markerEroski }
-        if(label.contains("GALP")){ markerRes = markerGalp }
-        if(label.contains("HAM")){ markerRes = markerHam }
-        if(label.contains("NATURGY")){ markerRes = markerNaturgy }
-        if(label.contains("PETRONOR")){ markerRes = markerPetronor }
-        if(label.contains("REPSOL")){ markerRes = markerRepsol }
-        if(label.contains("SHELL")){ markerRes = markerShell }
-        return markerRes
+        runOnUiThread{ val route = map.addPolyline(polyLineOptions) }
     }
 }
