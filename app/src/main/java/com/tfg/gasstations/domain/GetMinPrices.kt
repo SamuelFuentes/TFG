@@ -4,6 +4,7 @@ import com.tfg.gasstations.core.RetrofitHelper
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
 
 class GetMinPrices() {
+    //MERGE
     //Obtener el precio mínimo de cada combustible
     suspend fun minPrice95(idSelectedCity: String): Double {
         var lastMinPrice95 : Double = 99.99

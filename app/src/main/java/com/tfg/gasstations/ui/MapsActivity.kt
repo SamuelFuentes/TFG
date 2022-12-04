@@ -7,8 +7,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Layout
-import android.util.Log
 import android.view.Gravity.*
 import android.view.View
 import android.widget.*
@@ -27,13 +25,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.tfg.gasstations.core.RetrofitHelper
-import com.tfg.gasstations.data.model.gas.GasListResponse
 import com.tfg.gasstations.data.model.gas.GasStationsResponse
 import com.tfg.gasstations.data.model.routes.RouteResponse
 import com.tfg.gasstations.data.network.ApiServiceAllGas
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
 import com.tfg.gasstations.domain.*
-import kotlinx.coroutines.coroutineScope
+import retrofit2.Response
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -43,6 +40,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var distance: String = "1km"
     private var start : String = ""
     private var end   : String = ""
+    private lateinit var markerMin: TextView
+    private lateinit var markerNormal: TextView
     companion object {
         const val REQUEST_CODE_LOCATION = 0
     }
@@ -52,6 +51,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_maps)
         createMapFragment()
         GetCities().listCities()
+        markerMin = findViewById(R.id.tVMinPrice)
+        markerNormal = findViewById(R.id.tVNormal)
+
         val layoutMenu = findViewById<LinearLayout>(R.id.lLMenu)
         val buttonMenu = findViewById<ImageButton>(R.id.bMenu)
         buttonMenu.setOnClickListener{
@@ -178,97 +180,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
             if (call.isSuccessful && ::map.isInitialized){
-                if(fuelType=="ALL"){ MarkerAllTypes() }
-                if(fuelType=="GAS95"){ MarkerGas95(min95) }
-                if(fuelType=="GASOIL"){ MarkerGasoil(minGasoil) }
-            }
-        }
-    }
-
-
-    suspend fun MarkerAllTypes() {
-        val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
-            .getGasStationsByCity(idSelectedCity)
-        if (call.isSuccessful && ::map.isInitialized){
-            runOnUiThread{
-                for(i in call.body()!!.gasList){
-                    var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                    var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
-                    map.addMarker(MarkerOptions().position(position).title("${i.label}, ${i.address}")
-                        .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
-                        .icon(GetMarkerIcon().select(i.label)))
-                }
-            }
-        }
-    }
-
-    suspend fun MarkerGas95(min95: Double){
-        val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
-            .getGasStationsByCity(idSelectedCity)
-        if (call.isSuccessful && ::map.isInitialized){
-            runOnUiThread{
-                for(i in call.body()!!.gasList){
-                    if(i.gas95.isNotEmpty()){
+                runOnUiThread{
+                    for(i in call.body()!!.gasList){
                         var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                        if(min95== i.gas95.replace(",",".").toDouble()){
-                            findViewById<TextView>(R.id.tVMinPrice).text = i.gas95+"€"
-                            val imageViewShell : TextView = findViewById(R.id.tVMinPrice)
-                            val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                .viewTextToBitmap(imageViewShell), 136, 136, false)
-                            map.addMarker(MarkerOptions().position(position).title(
-                                "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                    (bitmapShell, 136,136,false))))
-                            map.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(position, 16f),
-                                4000,
-                                null)
-                        }else{
-                            findViewById<TextView>(R.id.tVNormal).text = i.gas95+"€"
-                            val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                            val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                .viewTextToBitmap(imageViewShell), 136, 136, false)
-                            map.addMarker(MarkerOptions().position(position).title(
-                                "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                    (bitmapShell, 136,136,false))))
+                        if(fuelType=="ALL"){
+                            GetMarkers().markerAll(map, i.gas95, i.gasol, position, i.schedule,
+                                i.label, i.address)
                         }
-                    }
-                }
-            }
-        }
-    }
-
-    suspend fun MarkerGasoil(minGasoil: Double){
-        val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
-            .getGasStationsByCity(idSelectedCity)
-        if (call.isSuccessful && ::map.isInitialized){
-            runOnUiThread{
-                for(i in call.body()!!.gasList){
-                    if(i.gasol.isNotEmpty()){
-                        var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                        if(minGasoil== i.gasol.replace(",",".").toDouble()){
-                            findViewById<TextView>(R.id.tVMinPrice).text = i.gasol+"€"
-                            val imageViewShell : TextView = findViewById(R.id.tVMinPrice)
-                            val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                .viewTextToBitmap(imageViewShell), 136, 136, false)
-                            map.addMarker(MarkerOptions().position(position).title(
-                                "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                    (bitmapShell, 136,136,false))))
-                            map.animateCamera(
-                                CameraUpdateFactory.newLatLngZoom(position, 16f),
-                                4000,
-                                null)
-                        }else{
-                            findViewById<TextView>(R.id.tVNormal).text = i.gasol+"€"
-                            val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                            val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                .viewTextToBitmap(imageViewShell), 136, 136, false)
-                            map.addMarker(MarkerOptions().position(position).title(
-                                "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                    (bitmapShell, 136,136,false))))
+                        if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
+                            GetMarkers().markerByGas(map, i.gas95, position, i.schedule, i.label,
+                                i.address, min95, markerMin, markerNormal )
+                        }
+                        if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
+                            GetMarkers().markerByGas(map, i.gasol, position, i.schedule, i.label,
+                                i.address, minGasoil, markerMin, markerNormal)
                         }
                     }
                 }
@@ -307,13 +232,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+
     //Dibujar ruta
+    //FIX min
     private suspend fun drawRoute(body : RouteResponse?){
-            val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
-                .getAllGasStations()
-            if(call.isSuccessful){
-                val polyLineOptions = PolylineOptions()
-                runOnUiThread {
+        var min95 = GetMinPrices().minPrice95(idSelectedCity)
+        var minGasoil = GetMinPrices().minPriceGasoil(idSelectedCity)
+        val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
+            .getAllGasStations()
+        if(call.isSuccessful){
+            val polyLineOptions = PolylineOptions()
+            runOnUiThread {
                 body?.features?.first()?.geometry?.coordinates?.forEach {
                     polyLineOptions.add(LatLng(it[1], it[0])).width(6.8F).color(Color.RED)
                     for (i in call.body()!!.gasList) {
@@ -326,33 +255,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             )
                         ) {
                             var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                            if(fuelType=="ALL"){
-                                var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
-                                map.addMarker(
-                                    MarkerOptions().position(position).title("${i.label}, ${i.address}")
-                                        .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
-                                        .icon(GetMarkerIcon().select(i.label)))
-                            }
-                            if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
-                                    findViewById<TextView>(R.id.tVNormal).text = i.gas95+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                            (bitmapShell, 136,136,false))))
-                            }
-                            if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
-                                    findViewById<TextView>(R.id.tVNormal).text = i.gasol+"€"
-                                    val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                                    val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                        .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                    map.addMarker(MarkerOptions().position(position).title(
-                                        "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                        .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                            (bitmapShell, 136,136,false))))
-                            }
+                            GetMarkers().selectTypeAndMark(fuelType, map, i.gas95, i.gasol,
+                                position, i.schedule, i.label, i.address, min95, minGasoil,
+                                markerMin, markerMin)
                         }
                     }
                 }
@@ -425,3 +330,4 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 }
+//391
