@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Gravity.*
 import android.view.View
 import android.widget.*
@@ -36,6 +37,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map : GoogleMap
     private lateinit var idSelectedCity : String
+    private var minPriceGas95id = 99.99
+    private var minPriceGasoilid = 99.99
+    private var minPriceGas95 = 99.99
+    private var minPriceGasoil = 99.99
     private var fuelType: String = "ALL"
     private var distance: String = "1km"
     private var start : String = ""
@@ -76,7 +81,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         //Limpiar el mapa
         val buttonClear : ImageButton = findViewById(R.id.bClear)
-        buttonClear.setOnClickListener{ map.clear() }
+        buttonClear.setOnClickListener{
+            //map.clear()
+            closeToMe()
+        }
         //Spinner para filtro por ciudades
         var citiesList: List<String> = GetCities().listCities()
         var spinnerCities = findViewById<Spinner>(R.id.spCities)
@@ -85,6 +93,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 CoroutineScope(Dispatchers.IO).launch {
                     idSelectedCity = GetCities().searchIdCity(citiesList[p2])
+                    minPriceGas95id= GetMinPrices().minPrice95(idSelectedCity)
+                    minPriceGasoilid= GetMinPrices().minPriceGasoil(idSelectedCity)
                 }
             }
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -93,9 +103,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         val buttonSearch : ImageButton = findViewById(R.id.bSearch)
         buttonSearch.setOnClickListener{
-            //markNearPos()
             markerGasByCity()
-            //closeToMe()
             layoutMenu.visibility = View.GONE
         }
     }
@@ -175,26 +183,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Crear markers de las gasolineras con sus descripciones
     private fun markerGasByCity() {
         CoroutineScope(Dispatchers.IO).launch {
-            var min95 = GetMinPrices().minPrice95(idSelectedCity)
-            var minGasoil = GetMinPrices().minPriceGasoil(idSelectedCity)
             val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
                 .getGasStationsByCity(idSelectedCity)
             if (call.isSuccessful && ::map.isInitialized){
                 runOnUiThread{
                     for(i in call.body()!!.gasList){
                         var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                        if(fuelType=="ALL"){
-                            GetMarkers().markerAll(map, i.gas95, i.gasol, position, i.schedule,
-                                i.label, i.address)
-                        }
-                        if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
-                            GetMarkers().markerByGas(map, i.gas95, position, i.schedule, i.label,
-                                i.address, min95, markerMin, markerNormal )
-                        }
-                        if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
-                            GetMarkers().markerByGas(map, i.gasol, position, i.schedule, i.label,
-                                i.address, minGasoil, markerMin, markerNormal)
-                        }
+                        GetMarkers().selectTypeAndMark(fuelType, map, i.gas95, i.gasol,
+                            position, i.schedule, i.label, i.address, minPriceGas95, minPriceGasoil,
+                            markerMin, markerNormal)
                     }
                 }
             }
@@ -236,8 +233,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     //Dibujar ruta
     //FIX min
     private suspend fun drawRoute(body : RouteResponse?){
-        var min95 = GetMinPrices().minPrice95(idSelectedCity)
-        var minGasoil = GetMinPrices().minPriceGasoil(idSelectedCity)
         val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
             .getAllGasStations()
         if(call.isSuccessful){
@@ -245,7 +240,31 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             runOnUiThread {
                 body?.features?.first()?.geometry?.coordinates?.forEach {
                     polyLineOptions.add(LatLng(it[1], it[0])).width(6.8F).color(Color.RED)
-                    for (i in call.body()!!.gasList) {
+                    for (i in call.body()!!.gasList){
+                        var minGas95: Double = 0.0
+                        var minGasoil: Double = 0.0
+                        if(i.gas95.isNotEmpty() && GetNearPos().calculateNear(
+                                it[1], it[0],
+                                i.lati.replace(",", ".").toDouble(),
+                                i.long.replace(",", ".").toDouble(),
+                                distance
+                            )){
+                            minGas95 = GetMinPrices().minPrice(minPriceGas95, i.gas95
+                                .replace(",",".").toDouble())
+                            minPriceGas95 = minGas95
+                        }
+                        if(i.gasol.isNotEmpty()&&GetNearPos().calculateNear(
+                                it[1], it[0],
+                                i.lati.replace(",", ".").toDouble(),
+                                i.long.replace(",", ".").toDouble(),
+                                distance
+                            )){
+                            minGasoil = GetMinPrices().minPrice(minPriceGasoil, i.gasol
+                                .replace(",",".").toDouble())
+                            minPriceGasoil= minGasoil
+                        }
+                    }
+                    for (i in call.body()!!.gasList){
                         if (GetNearPos().calculateNear(
                                 it[1],
                                 it[0],
@@ -254,10 +273,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 distance
                             )
                         ) {
+
                             var position = GetApiLatLng().toLatLng(i.lati,i.long)
                             GetMarkers().selectTypeAndMark(fuelType, map, i.gas95, i.gasol,
-                                position, i.schedule, i.label, i.address, min95, minGasoil,
-                                markerMin, markerMin)
+                                position, i.schedule, i.label, i.address, minPriceGas95,
+                                minPriceGasoil, markerMin, markerNormal)
                         }
                     }
                 }
@@ -278,33 +298,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 i.long.replace(",",".").toDouble(),
                                 distance)){
                             var position = GetApiLatLng().toLatLng(i.lati,i.long)
-                            if(fuelType=="ALL"){
-                                var gasTypeForSnippet = GetHavePrice().price(i.gas95, i.gasol)
-                                map.addMarker(
-                                    MarkerOptions().position(position).title("${i.label}, ${i.address}")
-                                        .snippet(i.schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
-                                        .icon(GetMarkerIcon().select(i.label)))
-                            }
-                            if(fuelType=="GAS95" && i.gas95.isNotEmpty()){
-                                findViewById<TextView>(R.id.tVNormal).text = i.gas95+"€"
-                                val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                map.addMarker(MarkerOptions().position(position).title(
-                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                        (bitmapShell, 136,136,false))))
-                            }
-                            if(fuelType=="GASOIL" && i.gasol.isNotEmpty()){
-                                findViewById<TextView>(R.id.tVNormal).text = i.gasol+"€"
-                                val imageViewShell : TextView = findViewById(R.id.tVNormal)
-                                val bitmapShell = Bitmap.createScaledBitmap(GetViewToBitmap()
-                                    .viewTextToBitmap(imageViewShell), 136, 136, false)
-                                map.addMarker(MarkerOptions().position(position).title(
-                                    "${i.label}, ${i.address}").snippet("Horario: " + i.schedule)
-                                    .icon(BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
-                                        (bitmapShell, 136,136,false))))
-                            }
+                            GetMarkers().selectTypeAndMark(fuelType, map, i.gas95, i.gasol,
+                                position, i.schedule, i.label, i.address, minPriceGas95,
+                                minPriceGasoil, markerMin, markerNormal)
                         }
                     }
                 }

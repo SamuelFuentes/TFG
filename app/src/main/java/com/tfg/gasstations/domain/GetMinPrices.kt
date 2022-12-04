@@ -36,4 +36,11 @@ class GetMinPrices() {
         }
         return lastMinPriceGasoil
     }
+    fun minPrice(last: Double, new: Double): Double{
+        var res: Double = last
+        if(last>new){
+            res = new
+        }
+        return res
+    }
 }
