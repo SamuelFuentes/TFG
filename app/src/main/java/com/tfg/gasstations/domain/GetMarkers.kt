@@ -1,7 +1,6 @@
 package com.tfg.gasstations.domain
 
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.TextView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,6 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 
 class GetMarkers {
+    //Añade markers de las gasolineras sin filtrar por combustible
     fun markerAll(map: GoogleMap, gas95Price: String, gasoilPrice: String, position: LatLng,
                           schedule: String, label: String, address: String){
         var gasTypeForSnippet = GetHavePrice().price(gas95Price, gasoilPrice)
@@ -18,9 +18,9 @@ class GetMarkers {
             .snippet(schedule+" | "+gasTypeForSnippet[0]+gasTypeForSnippet[1])
             .icon(GetMarkerIcon().select(label)))
     }
+    //Añade markers de las gasolineras filtradas por combustible
     fun markerByGas(map: GoogleMap, gasPrice: String, position: LatLng, schedule: String,
         label: String, address: String, minPrice: Double, textMin: TextView, textNormal: TextView){
-        Log.i("DEPURANDO","SE ESTA USANDO")
         var imageViewShell : TextView = textNormal
         if(minPrice== gasPrice.replace(",",".").toDouble()){
             imageViewShell = textMin
@@ -35,7 +35,6 @@ class GetMarkers {
             .icon(
                 BitmapDescriptorFactory.fromBitmap(Bitmap.createScaledBitmap
                 (bitmapShell, 136,136,false))))
-        Log.i("DEPURANDO","Salio")
         if(minPrice== gasPrice.replace(",",".").toDouble()){
             map.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(position, 16f),
@@ -43,6 +42,7 @@ class GetMarkers {
                 null)
         }
     }
+    //Selecciona la fun para añadir markers dependiendo de si se requieren todas o filtradas
     fun selectTypeAndMark(type: String, map: GoogleMap, gas95Price: String, gasoilPrice: String,
                    position: LatLng, schedule: String, label: String, address: String,
                    minPriceGas95: Double, minPriceGasoil: Double, textMin: TextView,

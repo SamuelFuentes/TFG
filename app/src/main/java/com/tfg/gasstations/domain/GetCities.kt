@@ -7,7 +7,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class GetCities {
-
     //Crear lista de ciudades para mostrarlas en el Spinner
     fun listCities(): List<String> {
         val citiesArrayList : MutableList<String> = mutableListOf("")

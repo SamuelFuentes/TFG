@@ -1,9 +1,7 @@
 package com.tfg.gasstations.domain
 
-import android.util.Log
-
 class GetNearPos {
-    //calcula si están proximos 2 coordenadas
+    //Calcula si están proximos 2 coordenadas
     fun calculateNear(lat1: Double, lon1: Double, lat2: Double, lon2: Double, distance: String):Boolean{
         var resultado : Boolean = false
         var resLon = lon1-lon2
@@ -16,8 +14,8 @@ class GetNearPos {
         if(distance == "6km" && res< 0.05 && res > -0.05){ resultado = true }
         return resultado
     }
-    //1,km --> 0.01
-    //2,5km --> 0.025
-    //6,5km --> 0.05
+    //~1,km --> 0.01
+    //~2,5km --> 0.025
+    //~6,5km --> 0.05
 
 }

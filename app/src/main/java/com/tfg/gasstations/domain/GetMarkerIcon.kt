@@ -5,6 +5,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.tfg.gasstations.R
 
 class GetMarkerIcon {
+    //Selecciona el icono para los markers
     fun select(label : String): BitmapDescriptor {
         var markerRes = BitmapDescriptorFactory.fromResource(R.drawable.marker_gasstations32x32)
         if(label.contains("AVIA")){

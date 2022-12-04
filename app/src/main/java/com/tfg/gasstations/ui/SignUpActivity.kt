@@ -20,7 +20,6 @@ class SignUpActivity : AppCompatActivity() {
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_sign_up)
         setContentView(binding.root)
-
         firebaseAuth = Firebase.auth
         //Verificación de campos y crear cuenta
         binding.bSignUp.setOnClickListener(){

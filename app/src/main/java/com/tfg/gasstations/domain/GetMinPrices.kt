@@ -4,8 +4,7 @@ import com.tfg.gasstations.core.RetrofitHelper
 import com.tfg.gasstations.data.network.ApiServiceGasByCity
 
 class GetMinPrices() {
-    //MERGE
-    //Obtener el precio mínimo de cada combustible
+    //Obtener el precio mínimo de la gasolina95 filtrado por ciudad
     suspend fun minPrice95(idSelectedCity: String): Double {
         var lastMinPrice95 : Double = 99.99
         val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
@@ -21,6 +20,7 @@ class GetMinPrices() {
         }
         return lastMinPrice95
     }
+    //Obtener el precio mínimo del gasoil filtrado por ciudad
     suspend fun minPriceGasoil(idSelectedCity: String): Double {
         var lastMinPriceGasoil : Double = 99.99
             val call = RetrofitHelper.getApiGas().create(ApiServiceGasByCity::class.java)
@@ -36,6 +36,7 @@ class GetMinPrices() {
         }
         return lastMinPriceGasoil
     }
+    //Obtener el precio mínimo de cualquier combustible
     fun minPrice(last: Double, new: Double): Double{
         var res: Double = last
         if(last>new){

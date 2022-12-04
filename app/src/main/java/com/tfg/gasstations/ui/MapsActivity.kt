@@ -61,6 +61,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val layoutMenu = findViewById<LinearLayout>(R.id.lLMenu)
         val buttonMenu = findViewById<ImageButton>(R.id.bMenu)
+        //Botón menú
         buttonMenu.setOnClickListener{
             if (layoutMenu.visibility == View.VISIBLE){
                 layoutMenu.visibility = View.GONE
@@ -70,7 +71,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 buttonMenu.foregroundGravity = LEFT
             }
         }
-
         //Clickar para elegir el inicio y final de la ruta y llamar la funcion de crear la ruta
         val buttonCalculateRoute = findViewById<ImageButton>(R.id.bRoute)
         buttonCalculateRoute.setOnClickListener{
@@ -81,9 +81,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         //Limpiar el mapa
         val buttonClear : ImageButton = findViewById(R.id.bClear)
-        buttonClear.setOnClickListener{
-            //map.clear()
+        buttonClear.setOnClickListener{ map.clear() }
+        //Buscar rutas cercanas a la posición del usuario
+        val buttonSearchByPosition: ImageButton = findViewById(R.id.bSearchByPosition)
+        buttonSearchByPosition.setOnClickListener {
             closeToMe()
+            layoutMenu.visibility = View.GONE
         }
         //Spinner para filtro por ciudades
         var citiesList: List<String> = GetCities().listCities()
@@ -134,6 +137,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .show()
         }
     }
+    //Radio button
     fun onRBPosition(view: View){
         if (view is RadioButton) {
             val checked= view.isChecked
@@ -144,6 +148,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+    //Radio button
     fun onRBfuelType(view: View){
         if (view is RadioButton) {
             val checked= view.isChecked
@@ -154,6 +159,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
+    //Crear mapa de google maps
     private fun createMapFragment(){
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -179,7 +185,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             )
         }
     }
-
     //Crear markers de las gasolineras con sus descripciones
     private fun markerGasByCity() {
         CoroutineScope(Dispatchers.IO).launch {
@@ -197,7 +202,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
     //Crear ruta custom
     private fun customRoute(){
         start = ""
@@ -229,9 +233,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
     }
-
-    //Dibujar ruta
-    //FIX min
+    //Dibujar ruta y marcar las gasolineras
     private suspend fun drawRoute(body : RouteResponse?){
         val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
             .getAllGasStations()
@@ -253,7 +255,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                                 .replace(",",".").toDouble())
                             minPriceGas95 = minGas95
                         }
-                        if(i.gasol.isNotEmpty()&&GetNearPos().calculateNear(
+                        if(i.gasol.isNotEmpty() && GetNearPos().calculateNear(
                                 it[1], it[0],
                                 i.lati.replace(",", ".").toDouble(),
                                 i.long.replace(",", ".").toDouble(),
@@ -285,6 +287,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 runOnUiThread{ val route = map.addPolyline(polyLineOptions) }
         }
     }
+    //FIX marcar más barata
     //añade markers a las gasolineras cercanas
     private suspend fun markNearPos(lat: Double, lng: Double) {
             val call = RetrofitHelper.getApiGas().create(ApiServiceAllGas::class.java)
@@ -292,8 +295,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (call.isSuccessful && ::map.isInitialized) {
                 runOnUiThread {
                     for (i in call.body()!!.gasList) {
-                        if(GetNearPos().calculateNear(lat,
-                                lng,
+                        if(GetNearPos().calculateNear(lat, lng,
                                 i.lati.replace(",",".").toDouble(),
                                 i.long.replace(",",".").toDouble(),
                                 distance)){
@@ -308,6 +310,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
+    //Calcula la ubicación del usuario
     private fun closeToMe(){
         if(::map.isInitialized){
             idSelectedCity = "00"
@@ -326,4 +329,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 }
+// recicler view en dbactivity para leer las gasolineras favoritas
+// recicler view en db para ver los precios de los combustibles más baratos y la gasolinera que lo tenía
+// tablas -> hechas: usuarios, por hacer: gasolineras favoritas, combustibles más baratos
+// añadir a los iconos de los markers la funcion de pulsando, agregue a la base de datos
 //391

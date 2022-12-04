@@ -19,7 +19,6 @@ class ForgotPasswordActivity : AppCompatActivity() {
         binding = ActivityForgotPasswordBinding.inflate(layoutInflater)
         setContentView(R.layout.activity_forgot_password)
         setContentView(binding.root)
-
         firebaseAuth = Firebase.auth
 
         //Mandar correo de recuperación
